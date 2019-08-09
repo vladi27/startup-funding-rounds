@@ -55,13 +55,17 @@ export const chart = () => {
       .scaleLinear()
       .domain([
         d3.min(data, d => {
-          return d.price;
+          return 1e9 * Math.floor(d.price / 1e9);
         }),
         d3.max(data, d => {
-          return d.price;
+          return 1e9 * Math.ceil(d.price / 1e9);
         })
       ])
+      .nice(7)
       .range([height, 0]);
+
+    //   { return 1e9*Math.floor(d["Tax Collection"]/1e9); },
+    // d3.max( data, function(d){ return 1e9*Math.ceil(d["Tax Collection"]/1e9); }
 
     // X Axis
     let xAxisCall = d3.axisBottom(x);
@@ -71,9 +75,14 @@ export const chart = () => {
       .call(xAxisCall);
 
     // Y Axis
-    let yAxisCall = d3.axisLeft(y).tickFormat(function(d) {
-      return "$" + d / 1000000000 + "B";
-    });
+    let yAxisCall = d3
+      .axisLeft(y)
+      // .ticks(7)
+      .tickFormat(function(d) {
+        if (d !== 0) {
+          return "$" + d / 1000000000 + "B";
+        }
+      });
     g.append("g")
       .attr("class", "y axis")
       // .attr("transform", "translate(0," - 50 + ")")

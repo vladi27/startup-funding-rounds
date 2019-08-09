@@ -47,3 +47,23 @@ fs.readFile("./companies.json", "utf8", function(err, data) {
     );
   }
 });
+
+// {
+//         "permalink": "/company/zyrra",
+//         "name": "Zyrra",
+//         "category_code": "ecommerce",
+//         "funding_total_usd": 1460500,
+//         "status": "operating",
+//         "country_code": "USA",
+//         "state_code": "MA",
+//         "region": "Boston",
+//         "city": "Cambridge",
+//         "funding_rounds": 3,
+//         "founded_at": "",
+//         "founded_month": "",
+//         "founded_quarter": "",
+//         "founded_year": "",
+//         "first_funding_at": "2010-11-15",
+//         "last_funding_at": "2012-10-18",
+//         "last_milestone_at": ""
+//     },

@@ -1,4 +1,3 @@
-
 const fs = require("fs");
 
 fs.readFile("./funding.json", "utf8", function(err, data) {
@@ -6,7 +5,7 @@ fs.readFile("./funding.json", "utf8", function(err, data) {
     console.log(err);
   } else {
     const jsonArray = JSON.parse(data);
-     console.log(jsonArray);
+    console.log(jsonArray);
 
     // const newjson = {
     //   price: jsonArray.price_amount,
@@ -16,20 +15,27 @@ fs.readFile("./funding.json", "utf8", function(err, data) {
 
     let newJson2 = jsonArray.map(obj => {
       let newObj = {};
-      if (obj.raised_amount_usd && obj.funded_year ) {
+      if (
+        obj.raised_amount_usd &&
+        obj.funded_year > 1999 &&
+        (obj.company_category_code === "mobile" ||
+          obj.company_category_code === "web" ||
+          obj.company_category_code === "software" ||
+          obj.company_category_code === "ecommerce" ||
+          obj.company_category_code === "medical")
+      ) {
         newObj = {
-         amountRaised: obj.raised_amount_usd,
-         round: obj.funding_round_type,
+          amountRaised: obj.raised_amount_usd,
+          round: obj.funding_round_type,
           company: obj.company_name,
           sector: obj.company_category_code,
           funded: obj.funded_year
-
         };
         return newObj;
       }
     });
     //console.log(newJson2)
-    
+
     let newJson = newJson2.filter(obj => {
       return obj != null;
     });
@@ -49,8 +55,6 @@ fs.readFile("./funding.json", "utf8", function(err, data) {
     );
   }
 });
-
-
 
 // "company_permalink": "/company/shwrm",
 //     "company_name": "_Shwr�m",

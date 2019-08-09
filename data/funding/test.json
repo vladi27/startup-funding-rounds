@@ -1,0 +1,46 @@
+{
+  "key": "2000",
+  "values": [
+    {
+      "key": "series-a",
+      "values": [
+        { "key": "mobile", "value": 23500000 },
+        { "key": "software", "value": 19439000 },
+        { "key": "web", "value": 76425000 },
+        { "key": "ecommerce", "value": 17968800 },
+        { "key": "medical", "value": 1000000 }
+      ]
+    },
+    {
+      "key": "series-c+",
+      "values": [
+        { "key": "software", "value": 42000000 },
+        { "key": "web", "value": 119000000 },
+        { "key": "ecommerce", "value": 35000000 }
+      ]
+    },
+    {
+      "key": "venture",
+      "values": [
+        { "key": "software", "value": 66500000 },
+        { "key": "mobile", "value": 7500000 }
+      ]
+    },
+    {
+      "key": "series-b",
+      "values": [
+        { "key": "mobile", "value": 26000000 },
+        { "key": "web", "value": 109216000 },
+        { "key": "software", "value": 43750000 }
+      ]
+    },
+    {
+      "key": "angel",
+      "values": [
+        { "key": "software", "value": 1435000 },
+        { "key": "web", "value": 1010000 },
+        { "key": "ecommerce", "value": 1200000 }
+      ]
+    }
+  ]
+}
