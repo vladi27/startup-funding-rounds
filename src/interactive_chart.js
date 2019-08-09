@@ -6,7 +6,7 @@ export const interactiveChart = () => {
 
   let flag = true;
 
-  //var t = d3.transition().duration(750);
+  var t = d3.transition().duration(750);
 
   let g = d3
     .select("#inter")
@@ -24,15 +24,15 @@ export const interactiveChart = () => {
   var yAxisGroup = g.append("g").attr("class", "y axis");
 
   //   // X Scale
-  var x0 = d3
+  let x0 = d3
     .scaleBand()
     .range([0, width])
     .padding(0.1);
 
-  var x1 = d3.scaleBand();
+  let x1 = d3.scaleBand();
 
   //   // Y Scale
-  var y = d3.scaleLinear().range([height, 0]);
+  let y = d3.scaleLinear().range([height, 0]);
 
   //   // X Label
   // var xLabel = g
@@ -52,9 +52,24 @@ export const interactiveChart = () => {
   //   .attr("transform", "translate(0," + height + ")")
   //   .call(xAxisCall);
 
-  var xAxis = d3.axisBottom(x0).tickSize(0);
+  let xAxis = d3.axisBottom(x0).tickSize(0);
 
-  var yAxis = d3.axisLeft(y);
+  let yAxis = d3.axisLeft(y);
+
+  let timeLabel = g
+    .append("text")
+    .attr("y", height + 50)
+    .attr("x", width - 40)
+    .attr("font-size", "40px")
+    .attr("opacity", "0.4")
+    .attr("text-anchor", "middle")
+    .text("2000");
+
+  let sectors = ["mobile", "software", "web", "ecommerce", "medical"];
+  let rounds = ["series-a", "series-b", "angel", "series-c+", "venture"];
+
+  x0.domain(rounds);
+  x1.domain(sectors).rangeRound([0, x0.bandwidth()]);
 
   // var xAxisGroup = g
   //     .append("g")
@@ -68,6 +83,8 @@ export const interactiveChart = () => {
   //   .range(["#ca0020", "#f4a582", "#d5d5d5", "#92c5de", "#0571b0"]);
 
   var color = d3.scaleOrdinal(d3.schemePastel1);
+
+  let time = 0;
 
   d3.json("../data/funding/new_funding.json").then(function(data) {
     //   //   //console.log(data);
@@ -96,55 +113,89 @@ export const interactiveChart = () => {
       })
       .entries(rawData);
 
-    //console.log(JSON.stringify(cleanData));
+    console.log(cleanData);
 
-    var rounds = cleanData.map(function(d) {
-      return d.values
-        .filter(ele => {
-          if (ele.key) return ele.key;
-        })
-        .map(ele2 => {
-          return ele2.key;
-        });
-    });
+    // var rounds = cleanData.map(function(d) {
+    //   return d.values
+    //     .filter(ele => {
+    //       if (ele.key) return ele.key;
+    //     })
+    //     .map(ele2 => {
+    //       return ele2.key;
+    //     });
+    // });
 
-    var elements = cleanData[0].values.map(ele => {
+    let elements = cleanData[0].values.map(ele => {
       return ele;
     });
 
-    x0.domain(
-      elements.map(ele => {
-        return ele.key;
-      })
-    );
+    // x1.domain(sectors).rangeRound([0, x0.bandwidth()]);
 
-    x1.domain(
-      cleanData[0].values[0].values.map(ele => {
-        return ele.key;
-      })
-    ).rangeRound([0, x0.bandwidth()]);
+    // x1.domain(
+    //   cleanData[0].values[0].values.map(ele => {
+    //     return ele.key;
+    //   })
+    // ).rangeRound([0, x0.bandwidth()]);
 
-    console.log(x1.domain());
-
-    //console.log(cleanData[0].values);
-    y.domain([
-      0,
-      d3.max(cleanData[0].values, function(rounds) {
-        return d3.max(rounds.values, function(d) {
-          return d.value;
-        });
-      })
-    ]);
-    // console.log(y.domain());
+    // y.domain([
+    //   0,
+    //   d3.max(cleanData[0].values, function(rounds) {
+    //     return d3.max(rounds.values, function(d) {
+    //       return d.value;
+    //     });
+    //   })
+    // ]);
 
     g.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
 
+    // console.log("hello");
+
+    // console.log(g.select(".y"));
+
+    d3.interval(function() {
+      // At the end of our data, loop back
+      time = time < 14 ? time + 1 : 0;
+      update(cleanData[time]);
+    }, 5000);
+
+    // First run of the visualization
+    update(cleanData[0]);
+  });
+
+  function update(data) {
+    let elements = data.values.map(ele => {
+      return ele;
+    });
+
+    // x0.domain(
+    //   elements.map(ele => {
+    //     return ele.key;
+    //   })
+    // );
+
+    //x0.domain(rounds);
+
+    //x1.domain(sectors).rangeRound([0, x0.bandwidth()]);
+
+    y.domain([
+      0,
+      d3.max(data.values, function(rounds) {
+        return d3.max(rounds.values, function(d) {
+          return d.value;
+        });
+      })
+    ]);
+    // g.append("g")
+    //   .attr("class", "x axis")
+    //   .attr("transform", "translate(0," + height + ")")
+    //   .call(xAxis);
+
     g.append("g")
       .attr("class", "y axis")
-      .style("opacity", "0")
+      .style("opacity", "1")
       .call(yAxis);
     g.append("text")
       .attr("transform", "rotate(-90)")
@@ -154,16 +205,17 @@ export const interactiveChart = () => {
       .style("font-weight", "bold")
       .text("Value");
 
-    g.selectAll(".y")
-      .transition()
-      .duration(500)
-      .delay(1300)
-      .style("opacity", "1");
-    console.log("hello");
+    // g.selectAll(".y")
+    //   .transition()
+    //   .duration(500)
+    //   .delay(1300)
+    //   .style("opacity", "1");
 
-    var slice = g
-      .selectAll("slice")
-      .data(cleanData[0].values)
+    //slice.exit().remove();
+
+    let slice2 = g
+      .selectAll(".slice")
+      .data(data.values)
       .enter()
       .append("g")
       .attr("class", "g")
@@ -171,18 +223,49 @@ export const interactiveChart = () => {
         return "translate(" + x0(d.key) + ",0)";
       });
 
-    console.log(g.select(".y"));
+    //console.log(slice2);
 
-    slice
-      .selectAll("rect")
-      .data(function(d) {
-        return d.values;
-      })
+    // slice
+    //   .exit()
+    //   .attr("class", "exit")
+    //   .remove();
+
+    // let rects = slice.selectAll("rect").data(function(d) {
+    //   return d.values;
+    // });
+
+    // rects
+    //   .exit()
+    //   .attr("class", "exit")
+    //   .remove();
+
+    // slice
+    //   .exit()
+    //   .attr("y", y(0))
+    //   .attr("height", 0)
+    //   .remove();
+
+    let rects = slice2.selectAll("rect").data(function(d) {
+      return d.values;
+    });
+
+    // slice.exit().remove();
+    //rects.exit().remove();
+
+    rects
+      .exit()
+      .transition(t)
+      .attr("height", 0)
+      .remove();
+
+    //rects.remove();
+
+    rects
       .enter()
       .append("rect")
       .attr("width", x1.bandwidth)
       .attr("x", function(d) {
-        //console.log(x1.range());
+        //console.log(x1(d.key), d.key);
         return x1(d.key);
       })
       .style("fill", function(d) {
@@ -192,7 +275,7 @@ export const interactiveChart = () => {
         return y(0);
       })
       .attr("height", function(d) {
-        return height - y(0);
+        return 0;
       })
       .on("mouseover", function(d) {
         d3.select(this).style("fill", d3.rgb(color(d.key)).darker(2));
@@ -201,20 +284,49 @@ export const interactiveChart = () => {
         d3.select(this).style("fill", color(d.key));
       });
 
-    slice
-      .selectAll("rect")
-      .transition()
+    let rects2 = slice2.selectAll("rect");
+
+    rects2
+      .transition(t)
       .delay(function(d) {
         return Math.random() * 1000;
       })
-      .duration(1000)
+      //.duration(500)
       .attr("y", function(d) {
         return y(d.value);
       })
       .attr("height", function(d) {
         return height - y(d.value);
       });
-  });
+
+    // rects2
+    //   .exit()
+    //   .transition(1500)
+    //   .remove();
+
+    // slice2
+    //   .exit()
+    //   .transition(2000)
+    //   .remove();
+    // rects
+    //   .exit()
+    //   .transition()
+    //   .duration(2000)
+    //   .attr("height", 0)
+    //   .remove();
+
+    // .transition(t)
+    // .attr("height", 0)
+
+    //rects.exit().remove();
+    slice2
+      .transition()
+      .duration(1500)
+      .delay(3000)
+      .selectAll("rect")
+      .remove();
+    timeLabel.text(+(time + 2000));
+  }
 };
 
 // x0.domain(categoriesNames);

@@ -22,7 +22,12 @@ fs.readFile("./funding.json", "utf8", function(err, data) {
           obj.company_category_code === "web" ||
           obj.company_category_code === "software" ||
           obj.company_category_code === "ecommerce" ||
-          obj.company_category_code === "medical")
+          obj.company_category_code === "medical") &&
+        (obj.funding_round_type === "series-a" ||
+          obj.funding_round_type === "series-c+" ||
+          obj.funding_round_type === "angel" ||
+          obj.funding_round_type === "series-b" ||
+          obj.funding_round_type === "venture")
       ) {
         newObj = {
           amountRaised: obj.raised_amount_usd,
