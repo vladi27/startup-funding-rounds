@@ -208,7 +208,7 @@ export const interactiveChart = () => {
     // g.selectAll(".y")
     //   .transition()
     //   .duration(500)
-    //   .delay(1300)
+    //   .delay(100)
     //   .style("opacity", "1");
 
     //slice.exit().remove();
@@ -325,6 +325,8 @@ export const interactiveChart = () => {
       .delay(3000)
       .selectAll("rect")
       .remove();
+
+    g.selectAll("g.y.axis").call(yAxis);
     timeLabel.text(+(time + 2000));
   }
 };
