@@ -183,10 +183,10 @@ export const interactiveChart = () => {
     }
   });
 
-  // document.getElementById("#reset-button").on("click", function() {
-  //   time = 0;
-  //   update(cleanData[0]);
-  // });
+  $("#reset-button").on("click", function() {
+    time = 0;
+    update(cleanData[0]);
+  });
 
   // $("#continent-select").on("change", function() {
   //   update(formattedData[time]);
