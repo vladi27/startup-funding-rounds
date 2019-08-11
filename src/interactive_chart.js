@@ -31,6 +31,9 @@ export const interactiveChart = () => {
 
   let x1 = d3.scaleBand();
 
+  let interval;
+  let cleanData;
+
   //   // Y Scale
   let y = d3.scaleLinear().range([height, 0]);
 
@@ -91,7 +94,7 @@ export const interactiveChart = () => {
 
     let rawData = data;
 
-    let cleanData = d3
+    cleanData = d3
       .nest()
       //     // .key(function(d) {
       //     //   return d.funded;
@@ -155,30 +158,50 @@ export const interactiveChart = () => {
 
     // console.log(g.select(".y"));
 
-    d3.interval(function() {
-      // At the end of our data, loop back
-      time = time < 14 ? time + 1 : 0;
-      update(cleanData[time]);
-    }, 5000);
+    // d3.interval(function() {
+    //   // At the end of our data, loop back
+    //   time = time < 14 ? time + 1 : 0;
+    //   update(cleanData[time]);
+    // }, 5000);
 
     // First run of the visualization
     update(cleanData[0]);
   });
 
+  // let button = d3.select("#play-button");
+  // console.log(button);
+
+  $("#play-button").on("click", function() {
+    let button = $(this);
+    if (button.text() == "Play") {
+      button.text("Pause");
+      interval = setInterval(step, 3000);
+      step();
+    } else {
+      button.text("Play");
+      clearInterval(interval);
+    }
+  });
+
+  // document.getElementById("#reset-button").on("click", function() {
+  //   time = 0;
+  //   update(cleanData[0]);
+  // });
+
+  // $("#continent-select").on("change", function() {
+  //   update(formattedData[time]);
+  // });
+
+  function step() {
+    // At the end of our data, loop back
+    time = time < 14 ? time + 1 : 0;
+    update(cleanData[time]);
+  }
+
   function update(data) {
     let elements = data.values.map(ele => {
       return ele;
     });
-
-    // x0.domain(
-    //   elements.map(ele => {
-    //     return ele.key;
-    //   })
-    // );
-
-    //x0.domain(rounds);
-
-    //x1.domain(sectors).rangeRound([0, x0.bandwidth()]);
 
     y.domain([
       0,
@@ -213,6 +236,19 @@ export const interactiveChart = () => {
 
     //slice.exit().remove();
 
+    g.selectAll("rect")
+      .transition(t)
+      .delay(function(d) {
+        return Math.random() * 50;
+      })
+      .attr("height", function(d) {
+        return 0;
+      })
+      .attr("y", function(d) {
+        return y(0);
+      })
+      .remove();
+
     let slice2 = g
       .selectAll(".slice")
       .data(data.values)
@@ -245,6 +281,15 @@ export const interactiveChart = () => {
     //   .attr("height", 0)
     //   .remove();
 
+    // slice2
+    //   .transition()
+    //   .duration(1200)
+    //   .delay(1500)
+    //   .selectAll("rect")
+    //   .remove();
+
+    // slice2.selectAll("g.rect").remove();
+
     let rects = slice2.selectAll("rect").data(function(d) {
       return d.values;
     });
@@ -252,17 +297,24 @@ export const interactiveChart = () => {
     // slice.exit().remove();
     //rects.exit().remove();
 
-    rects
-      .exit()
-      .transition(t)
-      .attr("height", 0)
-      .remove();
+    // rects
+    //   .exit()
+    //   .transition(t)
+    //   .attr("height", 0)
+    //   .remove();
 
     //rects.remove();
+    // let button2 = d3.select("#play-button");
+    // if (button2.text() === "Pause") {
+    //   rects.remove();
+    // }
+
+    // slice2.selectAll("g.rect").remove();
 
     rects
       .enter()
       .append("rect")
+      // .attr("class", "enter")
       .attr("width", x1.bandwidth)
       .attr("x", function(d) {
         //console.log(x1(d.key), d.key);
@@ -282,11 +334,22 @@ export const interactiveChart = () => {
       })
       .on("mouseout", function(d) {
         d3.select(this).style("fill", color(d.key));
-      });
+      })
+      .on("click", function(d) {
+        if (d3.select("#play-button").text() === "Play") {
+          d3.selectAll("rect")
+            .transition()
+            .duration(100)
+            .attr("y", function(d) {
+              return y(d.value);
+            })
+            .attr("height", function(d) {
+              return height - y(d.value);
+            });
+        }
+      })
 
-    let rects2 = slice2.selectAll("rect");
-
-    rects2
+      // .merge(rects)
       .transition(t)
       .delay(function(d) {
         return Math.random() * 1000;
@@ -298,6 +361,35 @@ export const interactiveChart = () => {
       .attr("height", function(d) {
         return height - y(d.value);
       });
+    // .end()
+    // .then(function(d) {
+    //   d3.selectAll("rect")
+    //     .transition()
+    //     .on("start", function() {
+    //       if (d3.select("#play-button").text() === "Play") {
+    //         d3.select(this).interrupt();
+    //       }
+    //     })
+    //     .delay(function(d) {
+    //       return 1000;
+    //     })
+    //     .duration(900)
+    //     .attr("y", function(d) {
+    //       return y(0);
+    //     })
+    //     .attr("height", function(d) {
+    //       return 0;
+    //     })
+    //     .remove();
+    // });
+
+    let rects2 = slice2.selectAll("rect");
+    let button2 = d3.select("#play-button");
+
+    // if (time == 0) {
+    //   rects2.transition().duration(0);
+    // } else {
+    //rects2;
 
     // rects2
     //   .exit()
@@ -319,17 +411,53 @@ export const interactiveChart = () => {
     // .attr("height", 0)
 
     //rects.exit().remove();
-    slice2
-      .transition()
-      .duration(1500)
-      .delay(3000)
-      .selectAll("rect")
-      .remove();
 
+    // console.log(button2.text());
+
+    // if (button2.text() === "Pause" && cleanData.indexOf(data) === 0) {
+    //   slice2
+    //     // .transition()
+    //     // // .duration(500)
+    //     // .delay(500)
+    //     .selectAll("rect")
+    //     .remove();
+    // }
+    // if (button2.text() === "Pause") {
+    //   slice2
+    //     .transition()
+    //     // .duration(500)
+    //     .delay(500)
+    //     .selectAll("rect")
+    //     .remove();
+    // }
+
+    // slice2
+    //   .transition()
+    //   .duration(1200)
+    //   .delay(1500)
+    //   .selectAll("rect")
+    //   .remove();
     g.selectAll("g.y.axis").call(yAxis);
     timeLabel.text(+(time + 2000));
   }
 };
+
+// var menu = d3.select("#menu select").on("change", change);
+
+// function change() {
+//   clearTimeout(timeout);
+
+//   d3.transition()
+//     .duration(altKey ? 7500 : 750)
+//     .each(redraw);
+// }
+
+// slice2
+//   .transition()
+//   .duration(1500)
+//   .delay(3000)
+//   .selectAll("rect")
+//   .remove();
 
 // x0.domain(categoriesNames);
 // x1.domain(rateNames).rangeRoundBands([0, x0.rangeBand()]);
