@@ -37,24 +37,6 @@ export const interactiveChart = () => {
   //   // Y Scale
   let y = d3.scaleLinear().range([height, 0]);
 
-  //   // X Label
-  // var xLabel = g
-  //   .append("text")
-  //   .attr("y", height + 50)
-  //   .attr("x", width / 2)
-  //   .attr("font-size", "20px")
-  //   .attr("text-anchor", "middle")
-  //   .text("Round");
-
-  // var xAxisCall = d3
-  //   .axisBottom(x)
-  //   .tickValues([400, 4000, 40000])
-  //   .tickFormat(d3.format("$"));
-  // g.append("g")
-  //   .attr("class", "x axis")
-  //   .attr("transform", "translate(0," + height + ")")
-  //   .call(xAxisCall);
-
   let xAxis = d3.axisBottom(x0).tickSize(0);
 
   let yAxis = d3.axisLeft(y);
@@ -73,6 +55,14 @@ export const interactiveChart = () => {
 
   x0.domain(rounds);
   x1.domain(sectors).rangeRound([0, x0.bandwidth()]);
+
+  g.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 6)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .style("font-weight", "bold")
+    .text("Value");
 
   // var xAxisGroup = g
   //     .append("g")
@@ -154,10 +144,6 @@ export const interactiveChart = () => {
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
 
-    // console.log("hello");
-
-    // console.log(g.select(".y"));
-
     // d3.interval(function() {
     //   // At the end of our data, loop back
     //   time = time < 14 ? time + 1 : 0;
@@ -188,9 +174,21 @@ export const interactiveChart = () => {
     update(cleanData[0]);
   });
 
-  // $("#continent-select").on("change", function() {
-  //   update(formattedData[time]);
-  // });
+  $("#industry-select").on("change", function() {
+    update(cleanData[time]);
+  });
+
+  $("#date-slider")
+    .slider({
+      max: 2013,
+      min: 2000,
+      step: 1,
+      slide: function(event, ui) {
+        time = ui.value - 2000;
+        update(cleanData[time]);
+      }
+    })
+    .slider("pips");
 
   function step() {
     // At the end of our data, loop back
@@ -202,6 +200,8 @@ export const interactiveChart = () => {
     let elements = data.values.map(ele => {
       return ele;
     });
+
+    // data = data.slice().array.forEach(element => {});
 
     y.domain([
       0,
@@ -216,25 +216,34 @@ export const interactiveChart = () => {
     //   .attr("transform", "translate(0," + height + ")")
     //   .call(xAxis);
 
+    console.log(d3.select("#industry-select").node().value);
+
     g.append("g")
       .attr("class", "y axis")
-      .style("opacity", "1")
-      .call(yAxis);
-    g.append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .style("font-weight", "bold")
-      .text("Value");
+      .style("opacity", "0");
+    //.call(yAxis);
 
-    // g.selectAll(".y")
-    //   .transition()
-    //   .duration(500)
-    //   .delay(100)
-    //   .style("opacity", "1");
+    let slice2 = g
+      .selectAll(".slice")
+      .data(data.values)
+      .enter()
+      .append("g")
+      .attr("class", "g")
+      .attr("transform", function(d) {
+        return "translate(" + x0(d.key) + ",0)";
+      });
 
-    //slice.exit().remove();
+    let rects = slice2.selectAll("rect").data(function(d) {
+      return d.values.filter(function(d) {
+        if (d3.select("#industry-select").node().value == "all") {
+          return d;
+        } else {
+          return d.key == d3.select("#industry-select").node().value;
+        }
+      });
+    });
+
+    console.log(rects);
 
     g.selectAll("rect")
       .transition(t)
@@ -249,50 +258,15 @@ export const interactiveChart = () => {
       })
       .remove();
 
-    let slice2 = g
-      .selectAll(".slice")
-      .data(data.values)
-      .enter()
-      .append("g")
-      .attr("class", "g")
-      .attr("transform", function(d) {
-        return "translate(" + x0(d.key) + ",0)";
-      });
+    // var industry = $("#industry-select").val();
 
-    //console.log(slice2);
-
-    // slice
-    //   .exit()
-    //   .attr("class", "exit")
-    //   .remove();
-
-    // let rects = slice.selectAll("rect").data(function(d) {
-    //   return d.values;
+    // data.filter(function(d) {
+    //   if (industry == "all") {
+    //     return true;
+    //   } else {
+    //     return d.key == industry;
+    //   }
     // });
-
-    // rects
-    //   .exit()
-    //   .attr("class", "exit")
-    //   .remove();
-
-    // slice
-    //   .exit()
-    //   .attr("y", y(0))
-    //   .attr("height", 0)
-    //   .remove();
-
-    // slice2
-    //   .transition()
-    //   .duration(1200)
-    //   .delay(1500)
-    //   .selectAll("rect")
-    //   .remove();
-
-    // slice2.selectAll("g.rect").remove();
-
-    let rects = slice2.selectAll("rect").data(function(d) {
-      return d.values;
-    });
 
     // slice.exit().remove();
     //rects.exit().remove();
@@ -349,7 +323,7 @@ export const interactiveChart = () => {
         }
       })
 
-      // .merge(rects)
+      //.merge(rects)
       .transition(t)
       .delay(function(d) {
         return Math.random() * 1000;
@@ -437,8 +411,23 @@ export const interactiveChart = () => {
     //   .delay(1500)
     //   .selectAll("rect")
     //   .remove();
-    g.selectAll("g.y.axis").call(yAxis);
+    d3.selectAll("g.y.axis")
+      .transition()
+      .duration(1000)
+      .delay(300)
+      .call(yAxis);
+
+    // d3.selectAll(".y")
+    //   .transition()
+    //   .duration(1000)
+    //   .delay(300)
+    //   .style("opacity", "1");
+
     timeLabel.text(+(time + 2000));
+
+    $("#year")[0].innerHTML = +(time + 2000);
+
+    $("#date-slider").slider("value", +(time + 2000));
   }
 };
 

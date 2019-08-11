@@ -1,0 +1,22 @@
+#inter svg {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+#reset-button,
+#play-button,
+#slider-div {
+  float: left;
+  margin-right: 10px;
+}
+
+#industry-select {
+  width: 300px;
+  float: right;
+  margin-top: 5px;
+}
+
+#slider-div {
+  width: 300px;
+  margin-left: 10px;
+}

@@ -11,6 +11,12 @@
       integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
       crossorigin="anonymous"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/css/bootstrap-slider.css"
+    />
+    <link rel="stylesheet" href="./stylesheets/main.css" />
+
     <script
       src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
       integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
@@ -26,6 +32,14 @@
       integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
       crossorigin="anonymous"
     ></script>
+    <script src="https://code.jquery.com/jquery-2.1.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+
+    <!-- plus a jQuery UI theme, here I use "flick" -->
+    <link
+      rel="stylesheet"
+      href="https://code.jquery.com/ui/1.10.4/themes/flick/jquery-ui.css"
+    />
   </head>
   <body>
     <h1>Hello World</h1>
@@ -36,6 +50,20 @@
         <div class="col-md-6">
           <button id="play-button" class="btn btn-primary">Play</button>
           <button id="reset-button" class="btn btn-primary">Reset</button>
+          <div id="slider-div">
+            <label>Year: <span id="year">2000</span></label>
+            <div id="date-slider"></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <select id="industry-select" class="form-control">
+            <option selected value="all">All</option>
+            <option value="mobile">Mobile</option>
+            <option value="software">Software</option>
+            <option value="web">Web</option>
+            <option value="ecommerce">Ecommerce</option>
+            <option value="medical">Medical</option>
+          </select>
         </div>
       </div>
       <div class="row">
