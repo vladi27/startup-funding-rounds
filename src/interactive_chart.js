@@ -1,3 +1,5 @@
+import { SlowBuffer } from "buffer";
+
 export const interactiveChart = () => {
   let margin = { left: 80, right: 20, top: 50, bottom: 100 };
 
@@ -15,13 +17,6 @@ export const interactiveChart = () => {
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
-
-  var xAxisGroup = g
-    .append("g")
-    .attr("class", "x axis")
-    .attr("transform", "translate(0," + height + ")");
-
-  var yAxisGroup = g.append("g").attr("class", "y axis");
 
   //   // X Scale
   let x0 = d3
@@ -55,6 +50,11 @@ export const interactiveChart = () => {
 
   x0.domain(rounds);
   x1.domain(sectors).rangeRound([0, x0.bandwidth()]);
+
+  g.append("g")
+    .attr("class", "y axis")
+    .style("opacity", "0")
+    .call(yAxis);
 
   g.append("text")
     .attr("transform", "rotate(-90)")
@@ -105,8 +105,6 @@ export const interactiveChart = () => {
         });
       })
       .entries(rawData);
-
-    console.log(cleanData);
 
     // var rounds = cleanData.map(function(d) {
     //   return d.values
@@ -178,17 +176,16 @@ export const interactiveChart = () => {
     update(cleanData[time]);
   });
 
-  $("#date-slider")
-    .slider({
-      max: 2013,
-      min: 2000,
-      step: 1,
-      slide: function(event, ui) {
-        time = ui.value - 2000;
-        update(cleanData[time]);
-      }
-    })
-    .slider("pips");
+  $("#date-slider").slider({
+    max: 2013,
+    min: 2000,
+    step: 1,
+    animate: "slow",
+    slide: function(event, ui) {
+      time = ui.value - 2000;
+      update(cleanData[time]);
+    }
+  });
 
   function step() {
     // At the end of our data, loop back
@@ -211,16 +208,7 @@ export const interactiveChart = () => {
         });
       })
     ]);
-    // g.append("g")
-    //   .attr("class", "x axis")
-    //   .attr("transform", "translate(0," + height + ")")
-    //   .call(xAxis);
 
-    console.log(d3.select("#industry-select").node().value);
-
-    g.append("g")
-      .attr("class", "y axis")
-      .style("opacity", "0");
     //.call(yAxis);
 
     let slice2 = g
@@ -411,10 +399,11 @@ export const interactiveChart = () => {
     //   .delay(1500)
     //   .selectAll("rect")
     //   .remove();
-    d3.selectAll("g.y.axis")
+    g.selectAll("g.y.axis")
       .transition()
       .duration(1000)
       .delay(300)
+      .style("opacity", "1")
       .call(yAxis);
 
     // d3.selectAll(".y")
