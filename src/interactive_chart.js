@@ -53,8 +53,8 @@ export const interactiveChart = () => {
 
   g.append("g")
     .attr("class", "y axis")
-    .style("opacity", "0")
-    .call(yAxis);
+    .style("opacity", "0");
+  //.call(yAxis);
 
   g.append("text")
     .attr("transform", "rotate(-90)")
@@ -75,7 +75,7 @@ export const interactiveChart = () => {
   //   .ordinal()
   //   .range(["#ca0020", "#f4a582", "#d5d5d5", "#92c5de", "#0571b0"]);
 
-  var color = d3.scaleOrdinal(d3.schemePastel1);
+  var color = d3.scaleOrdinal(d3.schemeSet1);
 
   let time = 0;
 
@@ -323,82 +323,10 @@ export const interactiveChart = () => {
       .attr("height", function(d) {
         return height - y(d.value);
       });
-    // .end()
-    // .then(function(d) {
-    //   d3.selectAll("rect")
-    //     .transition()
-    //     .on("start", function() {
-    //       if (d3.select("#play-button").text() === "Play") {
-    //         d3.select(this).interrupt();
-    //       }
-    //     })
-    //     .delay(function(d) {
-    //       return 1000;
-    //     })
-    //     .duration(900)
-    //     .attr("y", function(d) {
-    //       return y(0);
-    //     })
-    //     .attr("height", function(d) {
-    //       return 0;
-    //     })
-    //     .remove();
-    // });
 
     let rects2 = slice2.selectAll("rect");
     let button2 = d3.select("#play-button");
 
-    // if (time == 0) {
-    //   rects2.transition().duration(0);
-    // } else {
-    //rects2;
-
-    // rects2
-    //   .exit()
-    //   .transition(1500)
-    //   .remove();
-
-    // slice2
-    //   .exit()
-    //   .transition(2000)
-    //   .remove();
-    // rects
-    //   .exit()
-    //   .transition()
-    //   .duration(2000)
-    //   .attr("height", 0)
-    //   .remove();
-
-    // .transition(t)
-    // .attr("height", 0)
-
-    //rects.exit().remove();
-
-    // console.log(button2.text());
-
-    // if (button2.text() === "Pause" && cleanData.indexOf(data) === 0) {
-    //   slice2
-    //     // .transition()
-    //     // // .duration(500)
-    //     // .delay(500)
-    //     .selectAll("rect")
-    //     .remove();
-    // }
-    // if (button2.text() === "Pause") {
-    //   slice2
-    //     .transition()
-    //     // .duration(500)
-    //     .delay(500)
-    //     .selectAll("rect")
-    //     .remove();
-    // }
-
-    // slice2
-    //   .transition()
-    //   .duration(1200)
-    //   .delay(1500)
-    //   .selectAll("rect")
-    //   .remove();
     g.selectAll("g.y.axis")
       .transition()
       .duration(1000)
