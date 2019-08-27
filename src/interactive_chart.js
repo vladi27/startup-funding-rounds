@@ -4,7 +4,7 @@ import { parseSvg } from "d3-interpolate/src/transform/parse";
 export const interactiveChart = () => {
   let margin = { left: 80, right: 20, top: 50, bottom: 100 };
 
-  let width = 1300 - margin.left - margin.right;
+  let width = 900 - margin.left - margin.right;
   let height = 700 - margin.top - margin.bottom;
 
   let flag = true;
@@ -347,6 +347,9 @@ export const interactiveChart = () => {
         //console.log(x1(d.key), d.key);
         return x1(d.key);
       })
+      .attr("data-legend", function(d) {
+        return d.key;
+      })
       .style("fill", function(d) {
         return color(d.key);
       })
@@ -408,6 +411,54 @@ export const interactiveChart = () => {
       .delay(300)
       .style("opacity", "1")
       .call(yAxis);
+    g.selectAll("g.legend").remove();
+
+    // var legend = g
+    //   .selectAll(".legend")
+    //   .data(
+    //     sectors
+    //       .map(function(d) {
+    //         return d;
+    //       })
+    //       .reverse()
+    //   )
+    //   .enter()
+    //   .append("g")
+    //   .attr("class", "legend")
+    //   .attr("transform", function(d, i) {
+    //     return "translate(0," + (height + 40 + i * 20) + ")";
+    //   })
+    //   .orient("horizontal")
+    // .style("opacity", "0");
+
+    // legend
+    //   .append("rect")
+    //   .attr("x", width - 18)
+    //   .attr("width", 18)
+    //   .attr("height", 18)
+    //   .style("fill", function(d) {
+    //     return color(d);
+    //   });
+
+    // legend
+    //   .append("text")
+    //   .attr("x", width - 24)
+    //   .attr("y", 9)
+    //   .attr("dy", ".35em")
+    //   .style("text-anchor", "end")
+    //   .text(function(d) {
+    //     return d;
+    //   });
+
+    // legend
+    //   .transition()
+    //   .duration(500)
+    //   .delay(function(d, i) {
+    //     return 1300 + 100 * i;
+    //   })
+    //   .style("opacity", "1");
+
+    drawLegend.call(this);
 
     // d3.selectAll(".y")
     //   .transition()
@@ -422,13 +473,107 @@ export const interactiveChart = () => {
     $("#date-slider").slider("value", +(time + 2000));
   }
 
+  function drawLegend() {
+    //   var legend = d3
+    //     .select(".x.axis")
+    //     .enter()
+    //     .append("g")
+    //     .data(
+    //       sectors.map(function(d) {
+    //         return d;
+    //       })
+    //     );
+
+    //   const legW = 40;
+
+    //   legend
+
+    //     .append("rect")
+    //     .attr("width", legW)
+    //     .attr("x", function(d, i) {
+    //       return 1.5 * legW * i;
+    //     })
+    //     .attr("y", 50)
+    //     .attr("height", 20)
+    //     .style("fill", function(d) {
+    //       return color(d);
+    //     });
+
+    //   legend
+
+    //     .append("text")
+    //     .attr("dy", ".35em")
+    //     .style("text-anchor", "end")
+    //     .attr("x", function(d, i) {
+    //       return 1.5 * legW * i;
+    //     })
+    //     .attr("y", 70)
+    //     .text(function(d, i) {
+    //       return d;
+    //     })
+    //     .style("opacity", "1");
+    //   // .style("fill", "black")
+    //   //.style("stroke", "none");
+
+    // }
+
+    const legend = d3
+      .select("g")
+      .append("g")
+      .attr(
+        "transform",
+        "translate(" +
+          (margin.left + margin.right + 60) +
+          "," +
+          (height + 30) +
+          ")"
+      )
+      .selectAll("g")
+      .data(sectors)
+      .enter()
+      .append("g")
+      .attr("class", "legend");
+
+    legend
+      .append("rect")
+      .attr("fill", (d, i) => color(d)) //   const color = d3.scaleOrdinal(d3.schemeCategory10);
+      .attr("height", 15)
+      .attr("width", 15);
+
+    legend
+      .append("text")
+      .attr("x", 18)
+      .attr("y", 10)
+      .attr("dy", ".15em")
+      .text((d, i) => d)
+      .style("text-anchor", "start")
+      .style("font-size", 12);
+
+    // Now space the groups out after they have been appended:
+    const padding = 10;
+    legend.attr("transform", function(d, i) {
+      return (
+        "translate(" +
+        (d3.sum(sectors, function(e, j) {
+          if (j < i) {
+            return legend.nodes()[j].getBBox().width;
+          } else {
+            return 0;
+          }
+        }) +
+          padding * i) +
+        ",0)"
+      );
+    });
+  }
+
   function bar(g, down, data, selector) {
     const bars = g
       .insert("g", selector)
       .attr("class", "enter")
       .attr("transform", `translate(0,${50 + barStep * barPadding})`)
       .attr("text-anchor", "end")
-      .style("font", "14px sans-serif");
+      .style("font", "12px sans-serif");
 
     const bar = bars
       .selectAll("g")
@@ -439,7 +584,7 @@ export const interactiveChart = () => {
 
     bar
       .append("text")
-      .attr("x", 80 - 6)
+      .attr("x", 80 - 2)
       .attr("y", (27 * (1 - 0.1)) / 2)
       .attr("dy", ".35em")
       .text(d => d.company);
@@ -449,7 +594,7 @@ export const interactiveChart = () => {
       .attr("x", x3(0))
       .attr("width", function(d) {
         console.log(x3(0));
-        return x3(d.amountRaised) - x3(0);
+        return x3(d.amountRaised);
       })
       .attr("height", 27 * (1 - 0.3));
 
@@ -458,7 +603,7 @@ export const interactiveChart = () => {
 
   function drillDown(d, slice, round) {
     let unsortedData = testData[time];
-    const duration = 750;
+    const duration = 700;
     const transition1 = g.transition().duration(duration);
     const transition2 = transition1.transition();
 
@@ -557,20 +702,21 @@ export const interactiveChart = () => {
     // Color the bars as parents; they will fade to children if appropriate.
     enter
       .selectAll("rect")
-      .transition()
+      // .transition(t)
       .attr("fill", d => color(d.sector))
       .attr("fill-opacity", 1)
       .transition(transition2)
       // .attr("fill", d => color(d.sector))
-      .attr("width", d => x3(d.amountRaised) - x3(0));
+      .attr("width", d => x3(d.amountRaised));
 
     d3.selectAll("svg")
       .attr("class", "background")
       // .attr("fill", "none")
       .attr("pointer-events", "all")
-      // .attr("width", width)
-      // .attr("height", height)
+      .attr("width", width)
+      .attr("height", height)
       .attr("cursor", "pointer")
+
       .on("dblclick", d => {
         d3.event.preventDefault();
         restore(d);
@@ -580,7 +726,7 @@ export const interactiveChart = () => {
   function stack(i) {
     let value = 0;
     return d => {
-      const t = `translate(${x3(value) - x3(0)},${barStep * i})`;
+      const t = `translate(${x3(value)},${barStep * i})`;
       value += d.amountRaised;
       return t;
     };
@@ -589,7 +735,7 @@ export const interactiveChart = () => {
   function stagger() {
     let value = 0;
     return (d, i) => {
-      const t = `translate(${x3(value) - x3(0)},${barStep * i})`;
+      const t = `translate(${x3(value)},${barStep * i})`;
       value += d.amountRaised;
       return t;
     };
