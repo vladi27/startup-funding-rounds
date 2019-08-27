@@ -38,11 +38,20 @@ export const interactiveChart = () => {
   let barPadding = 3 / barStep;
 
   //   // Y Scale
-  let y = d3.scaleLinear().range([height, 0]);
+  let y = d3
+    .scaleLinear()
+    .range([height, 0])
+    .nice(7);
 
   let xAxis = d3.axisBottom(x0).tickSize(0);
 
-  let yAxis = d3.axisLeft(y);
+  let yAxis = d3.axisLeft(y).tickFormat(function(d) {
+    if (d !== 0 && d < 1000000000) {
+      return "$" + d / 1000000 + "M";
+    } else if (d !== 0) {
+      return "$" + d / 1000000000 + "B";
+    }
+  });
 
   let timeLabel = g
     .append("text")
@@ -75,6 +84,7 @@ export const interactiveChart = () => {
   //.call(yAxis);
 
   g.append("text")
+    .classed("label", true)
     .attr("transform", "rotate(-90)")
     .attr("y", 6)
     .attr("dy", ".71em")
@@ -355,6 +365,7 @@ export const interactiveChart = () => {
         // transition(t).remove();
         drillDown(d, slice2, round);
       })
+      .attr("cursor", "pointer")
       // .on("mouseover", function(d) {
       //   d3.select(this).style("fill", d3.rgb(color(d.key)).darker(2));
       // })
@@ -417,14 +428,14 @@ export const interactiveChart = () => {
       .attr("class", "enter")
       .attr("transform", `translate(0,${50 + barStep * barPadding})`)
       .attr("text-anchor", "end")
-      .style("font", "10px sans-serif");
+      .style("font", "14px sans-serif");
 
     const bar = bars
       .selectAll("g")
       .data(data)
       .join("g")
       .attr("cursor", "pointer");
-    // .on("click", d => down(svg, d));
+    // .on("mouseover", d => update(cleanData[time]));
 
     bar
       .append("text")
@@ -486,11 +497,26 @@ export const interactiveChart = () => {
 
     // Transition exiting bars to fade out.
     exit
-      .transition(t)
-      .attr("fill-opacity", 0)
+      .transition()
+      .delay(function(d) {
+        return Math.random() * 50;
+      })
+      .attr("height", function(d) {
+        return 0;
+      })
+      .attr("y", function(d) {
+        return y(0);
+      })
       .remove();
 
     g.selectAll("g.y.axis").remove();
+
+    d3.select("#play-button").style("opacity", "0");
+    d3.select("#reset-button").style("opacity", "0");
+    d3.select("#slider-div").style("opacity", "0");
+    d3.select("#industry-select").style("opacity", "0");
+    d3.select("#year").style("opacity", "0");
+    d3.selectAll("text").style("opacity", "0");
 
     g.selectAll("g.x.axis").remove();
     slice.remove();
@@ -501,6 +527,8 @@ export const interactiveChart = () => {
     g.append("g").call(xAxis2);
 
     g.append("g").call(yAxis2);
+
+    // .on("click", d => up(svg, d));
 
     const enter = bar(g, drillDown, data, ".y-axis").attr("fill-opacity", 0);
     console.log(enter);
@@ -529,11 +557,24 @@ export const interactiveChart = () => {
     // Color the bars as parents; they will fade to children if appropriate.
     enter
       .selectAll("rect")
-      .attr("fill", color(true))
+      .transition()
+      .attr("fill", d => color(d.sector))
       .attr("fill-opacity", 1)
       .transition(transition2)
-      // .attr("fill", d => color(!!d.children))
+      // .attr("fill", d => color(d.sector))
       .attr("width", d => x3(d.amountRaised) - x3(0));
+
+    d3.selectAll("svg")
+      .attr("class", "background")
+      // .attr("fill", "none")
+      .attr("pointer-events", "all")
+      // .attr("width", width)
+      // .attr("height", height)
+      .attr("cursor", "pointer")
+      .on("dblclick", d => {
+        d3.event.preventDefault();
+        restore(d);
+      });
   }
 
   function stack(i) {
@@ -552,6 +593,62 @@ export const interactiveChart = () => {
       value += d.amountRaised;
       return t;
     };
+  }
+  function restore(d) {
+    d3.selectAll("svg")
+      .attr("class", "background")
+      // .attr("fill", "none")
+      .attr("pointer-events", "all")
+      // .attr("width", width)
+      // .attr("height", height)
+      .attr("cursor", "default")
+      .on("click", null);
+
+    d3.select("#play-button").style("opacity", "1");
+    d3.select("#reset-button").style("opacity", "1");
+    d3.select("#slider-div").style("opacity", "1");
+    d3.select("#industry-select").style("opacity", "1");
+    d3.selectAll("text").style("opacity", "1");
+
+    const duration = 750;
+    const transition1 = g.transition().duration(duration);
+    const transition2 = transition1.transition();
+
+    const exit = g.selectAll(".enter").attr("class", "exit");
+    exit.selectAll("text").remove();
+    // Entering nodes immediately obscure the clicked-on bar, so hide it.
+    // exit.selectAll("rect").attr("fill-opacity", p => (p === d ? 0 : null));
+
+    // Transition exiting bars to fade out.
+    exit
+      .selectAll("rects")
+      .transition(transition2)
+      .attr("transform", (d, i) => `translate(${-barStep * i}, 0)`)
+      //.attr("width", d => 0)
+      // .attr("fill-opacity", 0)
+
+      // .attr("transform", stack(d.index))
+      // .transition(transition1)
+      // .attr("transform", stagger())
+      .remove();
+
+    g.selectAll("g.y-axis").remove();
+
+    d3.selectAll("g.x-axis").remove();
+
+    g.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .transition()
+      .call(xAxis);
+
+    g.append("g")
+      .attr("class", "y axis")
+      .style("opacity", "0");
+
+    d3.select("#year").style("opacity", "1");
+
+    update(cleanData[time]);
   }
 
   // y.range([0, width]);
