@@ -29,7 +29,7 @@
 #slider-div {
   width: 300px;
   margin-left: 10px;
-   color: #fff;
+  color: #fff;
 }
 
 .line {
@@ -49,7 +49,7 @@ text {
 }
 
 text.label {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400;
 }
 
@@ -106,7 +106,7 @@ div.tooltip {
 }
 
 .bar:hover {
-  fill: orange ;
+  fill: orangered;
 }
 
 /* Southward tooltips */
@@ -129,23 +129,22 @@ div.tooltip {
 #linechart {
   position: relative;
   margin-top: -50px;
- padding-left: 90px
+  padding-left: 90px;
 }
 
 #drilldown {
-  margin-bottom: -70px
+  margin-bottom: -70px;
 }
-body{
-    background: #2F4A6D;
+body {
+  background: #2f4a6d;
 }
 
 .col-md-6 {
- padding-top: 20px
+  padding-top: 20px;
 }
-
-
 
 text.title {
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 800;
+  fill: orange;
 }

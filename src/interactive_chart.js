@@ -372,12 +372,12 @@ export const interactiveChart = () => {
         drillDown(d, slice2, round);
       })
       .attr("cursor", "pointer")
-      // .on("mouseover", function(d) {
-      //   d3.select(this).style("fill", d3.rgb(color(d.key)).darker(2));
-      // })
-      // .on("mouseout", function(d) {
-      //   d3.select(this).style("fill", color(d.key));
-      // })
+      .on("mouseover", function(d) {
+        d3.select(this).style("fill", d3.rgb(color(d.key)).darker(2));
+      })
+      .on("mouseout", function(d) {
+        d3.select(this).style("fill", color(d.key));
+      })
       .on("change", function(d) {
         if (d3.select("#play-button").text() === "Play") {
           d3.selectAll("rect")
@@ -614,7 +614,7 @@ export const interactiveChart = () => {
       .attr("text-anchor", "middle")
       .text(
         d =>
-          `Top 10 ${round} rounds in the ${placeholder} inudstry in ${time +
+          `Largest ${round} rounds in the ${placeholder} inudstry in ${time +
             2000}`
       );
 
@@ -772,7 +772,14 @@ export const interactiveChart = () => {
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
+      .attr("cursor", "pointer")
+      .on("dblclick", d => {
+        d3.event.preventDefault();
+        restore(d);
+      })
+
       .append("g")
+
       .attr("transform", "translate(" + 80 + ", " + margin.top + ")");
 
     console.log(svg3);
