@@ -2,6 +2,8 @@ import { SlowBuffer } from "buffer";
 import { parseSvg } from "d3-interpolate/src/transform/parse";
 
 export const interactiveChart = () => {
+
+  console.log("github test")
   let margin = { left: 80, right: 20, top: 50, bottom: 100 };
 
   let width = 900 - margin.left - margin.right;
@@ -42,6 +44,8 @@ export const interactiveChart = () => {
     .scaleLinear()
     .range([height, 0])
     .nice(7);
+
+
 
   let xAxis = d3.axisBottom(x0).tickSize(0);
 
@@ -156,46 +160,43 @@ export const interactiveChart = () => {
           .attr("y2", height - margin.bottom - 50)
       );
 
-  d3.json("../data/funding/new_funding.json").then(function(data) {
+      d3.json("../data/funding/test_data.json").then(function(data) {
+        testData = data
+      })
+
+  d3.json("../data/funding/clean_new_funding.json").then(function(data) {
+
     // console.log(data);
 
-    rawData = data;
+    // rawData = data;
 
-    cleanData = d3
-      .nest()
-      //     // .key(function(d) {
-      //     //   return d.funded;
-      //     // })
-      .key(function(d) {
-        return d.funded;
-      })
-      .sortKeys(d3.ascending)
-      .key(function(d) {
-        return d.round;
-      })
-      .key(function(d) {
-        return d.sector;
-      })
-      .rollup(function(v) {
-        return d3.sum(v, function(d) {
-          return d.amountRaised;
-        });
-      })
-      .entries(rawData);
+    // cleanData = d3
+    //   .nest()
+    //   //     // .key(function(d) {
+    //   //     //   return d.funded;
+    //   //     // })
+    //   .key(function(d) {
+    //     return d.funded;
+    //   })
+    //   .sortKeys(d3.ascending)
+    //   .key(function(d) {
+    //     return d.round;
+    //   })
+    //   .key(function(d) {
+    //     return d.sector;
+    //   })
+    //   .rollup(function(v) {
+    //     return d3.sum(v, function(d) {
+    //       return d.amountRaised;
+    //     });
+    //   })
+    //   .entries(rawData);
 
-    testData = d3
-      .nest()
-      //     // .key(function(d) {
-      //     //   return d.funded;
-      //     // })
-      .key(function(d) {
-        return d.funded;
-      })
-      .sortKeys(d3.ascending)
-      .key(function(d) {
-        return d.sector;
-      })
-      .entries(rawData);
+    cleanData = data;
+
+      
+
+    
 
     console.log(testData);
 
