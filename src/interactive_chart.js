@@ -11,7 +11,7 @@ export const interactiveChart = () => {
 
   var t = d3.transition().duration(750);
 
-  let g = d3
+  let svg = d3
     .select("#inter")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -53,12 +53,38 @@ export const interactiveChart = () => {
     }
   });
 
-  let timeLabel = g
+  let tip = d3
+    .tip()
+    .attr("class", "d3-tip")
+    .direction("e") // Position the tooltip to the right of a target element
+    .offset([-10, 0])
+    .html(function(d) {
+      let text =
+        "<strong>Company:</strong> <span style='color:red'>" +
+        d.company +
+        "</span><br>";
+      text +=
+        "<strong>Sector:</strong> <span style='color:red;text-transform:capitalize'>" +
+        d.sector +
+        "</span><br>";
+      text +=
+        "<strong>Round:</strong> <span style='color:red'>" +
+        d.round +
+        "</span><br>";
+      text +=
+        "<strong>Amount Raised:</strong> <span style='color:red'>" +
+        d3.format("$,.0f")(d.amountRaised) +
+        "</span><br>";
+      return text;
+    });
+
+  let timeLabel = svg
     .append("text")
+    .attr("class", "label")
     .attr("y", height + 50)
     .attr("x", width - 40)
-    .attr("font-size", "40px")
-    .attr("opacity", "0.4")
+    // .attr("font-size", "40px")
+    // .attr("opacity", "0.4")
     .attr("text-anchor", "middle")
     .text("2000");
 
@@ -78,13 +104,15 @@ export const interactiveChart = () => {
     return scale(x);
   };
 
-  g.append("g")
+  svg
+    .append("g")
     .attr("class", "y axis")
     .style("opacity", "0");
   //.call(yAxis);
 
-  g.append("text")
-    .classed("label", true)
+  svg
+    .append("text")
+    .attr("class", "label")
     .attr("transform", "rotate(-90)")
     .attr("y", 6)
     .attr("dy", ".71em")
@@ -113,7 +141,7 @@ export const interactiveChart = () => {
     g
       .attr("class", "x-axis")
       .attr("transform", `translate(0 ,${margin.top})`)
-      .call(d3.axisTop(x3).ticks(width / 90, "s"))
+      .call(d3.axisTop(x3).ticks(width / 150, "s"))
       .call(g => (g.selection ? g.selection() : g).select(".domain").remove());
 
   let yAxis2 = g =>
@@ -125,7 +153,7 @@ export const interactiveChart = () => {
           .append("line")
           .attr("stroke", "currentColor")
           .attr("y1", margin.top)
-          .attr("y2", height - margin.bottom)
+          .attr("y2", height - margin.bottom - 50)
       );
 
   d3.json("../data/funding/new_funding.json").then(function(data) {
@@ -202,7 +230,8 @@ export const interactiveChart = () => {
     //   })
     // ]);
 
-    g.append("g")
+    svg
+      .append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
@@ -276,7 +305,7 @@ export const interactiveChart = () => {
 
     //.call(yAxis);
 
-    let slice2 = g
+    let slice2 = svg
       .selectAll(".slice")
       .data(data.values)
       .enter()
@@ -296,9 +325,8 @@ export const interactiveChart = () => {
       });
     });
 
-    console.log(rects);
-
-    g.selectAll("rect")
+    svg
+      .selectAll("rect")
       .transition(t)
       .delay(function(d) {
         return Math.random() * 50;
@@ -311,32 +339,7 @@ export const interactiveChart = () => {
       })
       .remove();
 
-    // var industry = $("#industry-select").val();
-
-    // data.filter(function(d) {
-    //   if (industry == "all") {
-    //     return true;
-    //   } else {
-    //     return d.key == industry;
-    //   }
-    // });
-
-    // slice.exit().remove();
-    //rects.exit().remove();
-
-    // rects
-    //   .exit()
-    //   .transition(t)
-    //   .attr("height", 0)
-    //   .remove();
-
-    //rects.remove();
-    // let button2 = d3.select("#play-button");
-    // if (button2.text() === "Pause") {
-    //   rects.remove();
-    // }
-
-    // slice2.selectAll("g.rect").remove();
+    console.log(rects);
 
     rects
       .enter()
@@ -405,58 +408,14 @@ export const interactiveChart = () => {
     let rects2 = slice2.selectAll("rect");
     let button2 = d3.select("#play-button");
 
-    g.selectAll("g.y.axis")
+    svg
+      .selectAll("g.y.axis")
       .transition()
       .duration(1000)
       .delay(300)
       .style("opacity", "1")
       .call(yAxis);
-    g.selectAll("g.legend").remove();
-
-    // var legend = g
-    //   .selectAll(".legend")
-    //   .data(
-    //     sectors
-    //       .map(function(d) {
-    //         return d;
-    //       })
-    //       .reverse()
-    //   )
-    //   .enter()
-    //   .append("g")
-    //   .attr("class", "legend")
-    //   .attr("transform", function(d, i) {
-    //     return "translate(0," + (height + 40 + i * 20) + ")";
-    //   })
-    //   .orient("horizontal")
-    // .style("opacity", "0");
-
-    // legend
-    //   .append("rect")
-    //   .attr("x", width - 18)
-    //   .attr("width", 18)
-    //   .attr("height", 18)
-    //   .style("fill", function(d) {
-    //     return color(d);
-    //   });
-
-    // legend
-    //   .append("text")
-    //   .attr("x", width - 24)
-    //   .attr("y", 9)
-    //   .attr("dy", ".35em")
-    //   .style("text-anchor", "end")
-    //   .text(function(d) {
-    //     return d;
-    //   });
-
-    // legend
-    //   .transition()
-    //   .duration(500)
-    //   .delay(function(d, i) {
-    //     return 1300 + 100 * i;
-    //   })
-    //   .style("opacity", "1");
+    svg.selectAll("g.legend").remove();
 
     drawLegend.call(this);
 
@@ -474,49 +433,6 @@ export const interactiveChart = () => {
   }
 
   function drawLegend() {
-    //   var legend = d3
-    //     .select(".x.axis")
-    //     .enter()
-    //     .append("g")
-    //     .data(
-    //       sectors.map(function(d) {
-    //         return d;
-    //       })
-    //     );
-
-    //   const legW = 40;
-
-    //   legend
-
-    //     .append("rect")
-    //     .attr("width", legW)
-    //     .attr("x", function(d, i) {
-    //       return 1.5 * legW * i;
-    //     })
-    //     .attr("y", 50)
-    //     .attr("height", 20)
-    //     .style("fill", function(d) {
-    //       return color(d);
-    //     });
-
-    //   legend
-
-    //     .append("text")
-    //     .attr("dy", ".35em")
-    //     .style("text-anchor", "end")
-    //     .attr("x", function(d, i) {
-    //       return 1.5 * legW * i;
-    //     })
-    //     .attr("y", 70)
-    //     .text(function(d, i) {
-    //       return d;
-    //     })
-    //     .style("opacity", "1");
-    //   // .style("fill", "black")
-    //   //.style("stroke", "none");
-
-    // }
-
     const legend = d3
       .select("g")
       .append("g")
@@ -567,20 +483,22 @@ export const interactiveChart = () => {
     });
   }
 
-  function bar(g, down, data, selector) {
-    const bars = g
+  function bar(svg2, down, data, selector) {
+    const g = svg2
       .insert("g", selector)
       .attr("class", "enter")
       .attr("transform", `translate(0,${50 + barStep * barPadding})`)
       .attr("text-anchor", "end")
-      .style("font", "12px sans-serif");
+      .style("font", "18px sans-serif");
 
-    const bar = bars
+    const bar = g
       .selectAll("g")
       .data(data)
       .join("g")
-      .attr("cursor", "pointer");
-    // .on("mouseover", d => update(cleanData[time]));
+      .attr("cursor", "pointer")
+      //  .on("click", d => update(cleanData[time]))
+      .on("mouseover", tip.show)
+      .on("mouseout", tip.hide);
 
     bar
       .append("text")
@@ -592,24 +510,28 @@ export const interactiveChart = () => {
     bar
       .append("rect")
       .attr("x", x3(0))
+      .attr("class", "bar")
       .attr("width", function(d) {
         console.log(x3(0));
-        return x3(d.amountRaised);
+        return x3(d.amountRaised) - x3(0);
       })
       .attr("height", 27 * (1 - 0.3));
 
-    return bars;
+    return g;
   }
 
   function drillDown(d, slice, round) {
     let unsortedData = testData[time];
     const duration = 700;
-    const transition1 = g.transition().duration(duration);
+    const transition1 = d3.transition().duration(duration);
     const transition2 = transition1.transition();
 
     console.log(unsortedData);
     console.log(d);
     console.log(round);
+    console.log(testData);
+
+    let ab = testData.map(ele => Object.values(ele));
 
     let newData = unsortedData.values.filter(ele => {
       if (ele.key === d.key) {
@@ -628,6 +550,10 @@ export const interactiveChart = () => {
       .sort((a, b) => d3.descending(a.amountRaised, b.amountRaised))
       .slice(0, 10);
 
+    let lineChartData = getData(d, round);
+
+    console.log(lineChartData);
+
     console.log(newData3);
 
     console.log(newData2);
@@ -635,26 +561,7 @@ export const interactiveChart = () => {
     // let rects = g.selectAll("rect").data(newData);
     let data = newData3;
 
-    const exit = g.selectAll("rect").attr("class", "exit");
-
-    // Entering nodes immediately obscure the clicked-on bar, so hide it.
-    exit.selectAll("rect").attr("fill-opacity", p => (p === d ? 0 : null));
-
-    // Transition exiting bars to fade out.
-    exit
-      .transition()
-      .delay(function(d) {
-        return Math.random() * 50;
-      })
-      .attr("height", function(d) {
-        return 0;
-      })
-      .attr("y", function(d) {
-        return y(0);
-      })
-      .remove();
-
-    g.selectAll("g.y.axis").remove();
+    d3.selectAll("svg").remove();
 
     d3.select("#play-button").style("opacity", "0");
     d3.select("#reset-button").style("opacity", "0");
@@ -663,19 +570,59 @@ export const interactiveChart = () => {
     d3.select("#year").style("opacity", "0");
     d3.selectAll("text").style("opacity", "0");
 
-    g.selectAll("g.x.axis").remove();
-    slice.remove();
+    // g.selectAll("g.x.axis").remove();
+    // slice.remove();
+
+    const svg2 = d3
+      .select("#drilldown")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+    svg2.call(tip);
 
     x3.domain([0, data[0].amountRaised]);
     console.log(x3.domain());
 
-    g.append("g").call(xAxis2);
+    svg2
+      .append("rect")
+      .attr("class", "background")
+      .attr("fill", "none")
+      .attr("pointer-events", "all")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("cursor", "pointer")
+      .on("dblclick", d => {
+        d3.event.preventDefault();
+        restore(d);
+      });
+    // .on("click", d => up(svg, d));
 
-    g.append("g").call(yAxis2);
+    svg2.append("g").call(xAxis2);
+
+    svg2.append("g").call(yAxis2);
+
+    let placeholder = d.key;
+
+    svg2
+      .append("text")
+      .attr("class", "title")
+      .attr("x", width / 2)
+      .attr("y", -10)
+      .attr("text-anchor", "middle")
+      .text(
+        d =>
+          `Top 10 ${round} rounds in the ${placeholder} inudstry in ${time +
+            2000}`
+      );
+
+    // svg2.call(tip)
 
     // .on("click", d => up(svg, d));
 
-    const enter = bar(g, drillDown, data, ".y-axis").attr("fill-opacity", 0);
+    const enter = bar(svg2, drillDown, data, ".y-axis").attr("fill-opacity", 0);
     console.log(enter);
     enter.transition(transition1).attr("fill-opacity", 1);
 
@@ -689,8 +636,9 @@ export const interactiveChart = () => {
     // Update the x-scale domain.
 
     // Update the x-axis.
-    g.selectAll(".x-axis")
-      .transition(transition2)
+    svg2
+      .selectAll(".x-axis")
+      .transition()
       .call(xAxis2);
 
     // Transition entering bars to the new x-scale.
@@ -702,25 +650,27 @@ export const interactiveChart = () => {
     // Color the bars as parents; they will fade to children if appropriate.
     enter
       .selectAll("rect")
-      // .transition(t)
+      .transition(t)
       .attr("fill", d => color(d.sector))
       .attr("fill-opacity", 1)
-      .transition(transition2)
-      // .attr("fill", d => color(d.sector))
+      .transition()
+      .attr("fill", d => color(d.sector))
       .attr("width", d => x3(d.amountRaised));
 
-    d3.selectAll("svg")
-      .attr("class", "background")
-      // .attr("fill", "none")
-      .attr("pointer-events", "all")
-      .attr("width", width)
-      .attr("height", height)
-      .attr("cursor", "pointer")
+    buildLineChart(lineChartData, placeholder, round);
 
-      .on("dblclick", d => {
-        d3.event.preventDefault();
-        restore(d);
-      });
+    // d3.selectAll("svg")
+    //   .attr("class", "background")
+    //   // .attr("fill", "none")
+    //   .attr("pointer-events", "all")
+    //   // .attr("width", width + margin.right + margin.left)
+    //   // .attr("height", height)
+    //   .attr("cursor", "pointer")
+    //   .attr("transform", "translate(-250, -30)")
+    //   .on("dblclick", d => {
+    //     d3.event.preventDefault();
+    //     restore(d);
+    //   });
   }
 
   function stack(i) {
@@ -740,15 +690,207 @@ export const interactiveChart = () => {
       return t;
     };
   }
+
+  function getData(d, round) {
+    let results = [];
+
+    let i = 0;
+
+    while (i < 14) {
+      let obj = {};
+      let unsortedData = testData[i];
+
+      let newData = unsortedData.values.filter(ele => {
+        if (ele.key === d.key) {
+          return ele;
+        }
+      });
+
+      if (newData[0] === undefined) {
+        results.push({ y: 0 });
+        i++;
+        continue;
+      }
+
+      let newData2 = newData[0].values.filter(ele => {
+        if (ele.round === round) {
+          return ele;
+        }
+      });
+
+      let sum = 0;
+
+      newData2.forEach(ele => {
+        sum += ele.amountRaised;
+      });
+      obj["y"] = sum;
+      results.push(obj);
+      i++;
+    }
+    return results;
+  }
+
+  function buildLineChart(lineChartData, placeholder, round) {
+    let n = 13;
+    let sortedData = lineChartData
+      .slice()
+      .sort((a, b) => d3.descending(a.y, b.y));
+
+    console.log(sortedData);
+
+    let xScale3 = d3
+      .scaleLinear()
+      .domain([2000, 2013]) // input
+      .range([0, width]);
+    // o
+
+    let yScale = d3
+      .scaleLinear()
+      .domain([0, sortedData[0].y]) // input
+      .range([height, 0]);
+
+    console.log(yScale.domain());
+
+    let div = d3
+      .select("body")
+      .append("div") // declare the tooltip div
+      .attr("class", "tooltip") // apply the 'tooltip' class
+      .style("opacity", 0);
+
+    let line = d3
+      .line()
+      .x(function(d, i) {
+        return xScale3(i + 2000);
+      }) // set the x values for the line generator
+      .y(function(d) {
+        return yScale(d.y);
+      }) // set the y values for the line generator
+      .curve(d3.curveMonotoneX); // apply smoothing to the line
+
+    const svg3 = d3
+      .select("#linechart")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + 80 + ", " + margin.top + ")");
+
+    console.log(svg3);
+
+    svg3
+      .append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(xScale3).tickFormat(d3.format("d")));
+
+    svg3
+      .append("g")
+      .attr("class", "y axis")
+      .call(
+        d3.axisLeft(yScale).tickFormat(function(d) {
+          if (d !== 0 && d < 1000000000) {
+            return "$" + d / 1000000 + "M";
+          } else if (d !== 0) {
+            return "$" + d / 1000000000 + "B";
+          }
+        })
+      );
+
+    svg3
+      .append("path")
+      .datum(lineChartData) // 10. Binds data to the line
+      .attr("class", "line") // Assign a class for styling
+      .attr("d", line);
+
+    svg3
+      .selectAll(".dot")
+      .data(lineChartData)
+      .enter()
+      .append("circle") // Uses the enter().append() method
+      .attr("class", "dot") // Assign a class for styling
+      .attr("cx", function(d, i) {
+        return xScale3(i + 2000);
+      })
+      .attr("cy", function(d) {
+        return yScale(d.y);
+      })
+      .attr("r", function(d, i) {
+        if (i === time) {
+          return 7;
+        } else {
+          return 5;
+        }
+      })
+      .style("fill", function(d, i) {
+        if (i === time) return "red";
+      })
+      .on("mouseover", function(d, i) {
+        div
+          .transition()
+          .duration(200)
+          .style("opacity", 0.9);
+        div
+          .html(
+            i +
+              2000 +
+              ": " +
+              " $" +
+              d3
+                .format(".2s")(d["y"])
+                .replace(/G/, "B")
+          )
+          .style("left", d3.event.pageX + "px")
+          .style("top", d3.event.pageY - 28 + "px");
+      })
+      .on("mouseout", function(d) {
+        div
+          .transition()
+          .duration(500)
+          .style("opacity", 0);
+      });
+
+    svg3
+      .append("text")
+      .attr("class", "title")
+      .attr("x", width / 2)
+      .attr("y", -30)
+      .attr("text-anchor", "middle")
+      .text(
+        d =>
+          `Total Raised per Year in ${round} in the ${placeholder} Inudstry, 2000-2013`
+      );
+  }
+
   function restore(d) {
-    d3.selectAll("svg")
-      .attr("class", "background")
-      // .attr("fill", "none")
-      .attr("pointer-events", "all")
-      // .attr("width", width)
-      // .attr("height", height)
-      .attr("cursor", "default")
-      .on("click", null);
+    d3.selectAll("svg").remove();
+
+    svg = d3
+      .select("#inter")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+    svg
+      .append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .style("font-weight", "bold")
+      .text("Value");
+
+    timeLabel = svg
+      .append("text")
+      .attr("class", "label")
+      .attr("y", height + 50)
+      .attr("x", width - 40)
+      // .attr("font-size", "40px")
+      // .attr("opacity", "0.4")
+      .attr("text-anchor", "middle")
+      .text(`${time + 2000}`);
 
     d3.select("#play-button").style("opacity", "1");
     d3.select("#reset-button").style("opacity", "1");
@@ -757,10 +899,10 @@ export const interactiveChart = () => {
     d3.selectAll("text").style("opacity", "1");
 
     const duration = 750;
-    const transition1 = g.transition().duration(duration);
+    const transition1 = d3.transition().duration(duration);
     const transition2 = transition1.transition();
 
-    const exit = g.selectAll(".enter").attr("class", "exit");
+    const exit = svg.selectAll(".enter").attr("class", "exit");
     exit.selectAll("text").remove();
     // Entering nodes immediately obscure the clicked-on bar, so hide it.
     // exit.selectAll("rect").attr("fill-opacity", p => (p === d ? 0 : null));
@@ -778,17 +920,19 @@ export const interactiveChart = () => {
       // .attr("transform", stagger())
       .remove();
 
-    g.selectAll("g.y-axis").remove();
+    d3.selectAll("g.y-axis").remove();
 
     d3.selectAll("g.x-axis").remove();
 
-    g.append("g")
+    svg
+      .append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .transition()
       .call(xAxis);
 
-    g.append("g")
+    svg
+      .append("g")
       .attr("class", "y axis")
       .style("opacity", "0");
 
@@ -796,40 +940,4 @@ export const interactiveChart = () => {
 
     update(cleanData[time]);
   }
-
-  // y.range([0, width]);
-
-  // x0.domain(
-  //   data.map(function(d) {
-  //     return d.company;
-  //   })
-  // );
-
-  // xAxis = d3.axisLeft(x0);
-  // yAxis = d3.axisTop(y).ticks(width / 100, "s");
 };
-
-//   clearTimeout(timeout);
-
-//   d3.transition()
-//     .duration(altKey ? 7500 : 750)
-//     .each(redraw);
-// }
-
-// slice2
-//   .transition()
-//   .duration(1500)
-//   .delay(3000)
-//   .selectAll("rect")
-//   .remove();
-
-// x0.domain(categoriesNames);
-// x1.domain(rateNames).rangeRoundBands([0, x0.rangeBand()]);
-// y.domain([
-//   0,
-//   d3.max(data, function(categorie) {
-//     return d3.max(categorie.values, function(d) {
-//       return d.value;
-//     });
-//   })
-// ]);
