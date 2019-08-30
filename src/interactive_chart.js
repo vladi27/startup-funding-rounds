@@ -160,11 +160,11 @@ export const interactiveChart = () => {
           .attr("y2", height - margin.bottom - 50)
       );
 
-      d3.json("../data/funding/test_data.json").then(function(data) {
+      d3.json("./data/funding/test_data.json").then(function(data) {
         testData = data
       })
 
-  d3.json("../data/funding/clean_new_funding.json").then(function(data) {
+  d3.json("./data/funding/clean_new_funding.json").then(function(data) {
 
     // console.log(data);
 
