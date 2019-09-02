@@ -28,6 +28,8 @@ export const interactiveChart = () => {
 
   let x1 = d3.scaleBand();
 
+  d3.select("#goback-button").style("opacity", "0");
+
   let rawData;
   let testData;
 
@@ -257,6 +259,10 @@ export const interactiveChart = () => {
   $("#reset-button").on("click", function() {
     time = 0;
     update(cleanData[0]);
+  });
+
+  $("#goback-button").on("click", function() {
+    restore();
   });
 
   $("#industry-select").on("change", function() {
@@ -556,17 +562,22 @@ export const interactiveChart = () => {
 
     d3.selectAll("svg").remove();
 
-    $("#reset-button").text("Go Back");
-    $("#reset-button").on("click", function() {
-      restore();
-    });
+    // $("#play-button").text("Go Back");
+    // $("#play-button").on("click", function() {
+    //   let button = $(this);
+    //   button.text("Play");
+
+    //   restore();
+    // });
 
     d3.select("#play-button").style("opacity", "0");
-    // d3.select("#reset-button").style("opacity", "0");
+    d3.select("#reset-button").style("opacity", "0");
     d3.select("#slider-div").style("opacity", "0");
     d3.select("#industry-select").style("opacity", "0");
     d3.select("#year").style("opacity", "0");
     d3.selectAll("text").style("opacity", "0");
+
+    d3.select("#goback-button").style("opacity", "1");
 
     // g.selectAll("g.x.axis").remove();
     // slice.remove();
@@ -887,13 +898,6 @@ export const interactiveChart = () => {
       .style("font-weight", "bold")
       .text("Value");
 
-    $("#reset-button").text("Reset");
-
-    $("#reset-button").on("click", function() {
-      time = 0;
-      update(cleanData[0]);
-    });
-
     timeLabel = svg
       .append("text")
       .attr("class", "label")
@@ -903,6 +907,8 @@ export const interactiveChart = () => {
       // .attr("opacity", "0.4")
       .attr("text-anchor", "middle")
       .text(`${time + 2000}`);
+
+    d3.select("#goback-button").style("opacity", "0");
 
     d3.select("#play-button").style("opacity", "1");
     d3.select("#reset-button").style("opacity", "1");

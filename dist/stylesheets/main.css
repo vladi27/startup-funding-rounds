@@ -15,9 +15,17 @@
   margin-top: 5px;
 }
 
+#goback-button {
+  float: left;
+  cursor: pointer;
+
+  /* margin-top: 5px; */
+}
+
 #slider-div {
   float: left;
   margin-right: 10px;
+  /* margin-top: -40px; */
 }
 
 #industry-select {
