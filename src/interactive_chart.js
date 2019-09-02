@@ -435,51 +435,76 @@ export const interactiveChart = () => {
     const legend = d3
       .select("g")
       .append("g")
-      .attr(
-        "transform",
-        "translate(" +
-          (margin.left + margin.right + 60) +
-          "," +
-          (height + 30) +
-          ")"
-      )
+      // .attr(
+      //   "transform",
+      //   "translate(" +
+      //     (margin.left + margin.right + 60) +
+      //     "," +
+      //     (height + 30) +
+      //     ")"
+      // )
+
       .selectAll("g")
       .data(sectors)
       .enter()
       .append("g")
-      .attr("class", "legend");
+      .attr("class", "legend")
+      .attr("transform", function(d, i) {
+        return "translate(10," + 25 * i + ")";
+      });
+
+    // legend
+    //   .append("rect")
+    //   .attr("fill", (d, i) => color(d)) //   const color = d3.scaleOrdinal(d3.schemeCategory10);
+    //   .attr("height", 18)
+    //   .attr("width", 18);
 
     legend
       .append("rect")
-      .attr("fill", (d, i) => color(d)) //   const color = d3.scaleOrdinal(d3.schemeCategory10);
-      .attr("height", 15)
-      .attr("width", 15);
+      .attr("x", width - 10)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", function(d) {
+        return color(d);
+      });
 
     legend
       .append("text")
-      .attr("x", 18)
-      .attr("y", 10)
-      .attr("dy", ".15em")
-      .text((d, i) => d)
-      .style("text-anchor", "start")
-      .style("font-size", 12);
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) {
+        return d;
+      });
+
+    // legend
+    //   .append("text")
+    //   // .attr("x", 18)
+    //   // .attr("y", 10)
+    //   .attr("x", width - 24)
+    //   .attr("y", 9)
+    //   .attr("dy", ".15em")
+    //   .text((d, i) => d)
+    //   .style("text-anchor", "start")
+    //   .style("font-size", 12);
 
     // Now space the groups out after they have been appended:
-    const padding = 10;
-    legend.attr("transform", function(d, i) {
-      return (
-        "translate(" +
-        (d3.sum(sectors, function(e, j) {
-          if (j < i) {
-            return legend.nodes()[j].getBBox().width;
-          } else {
-            return 0;
-          }
-        }) +
-          padding * i) +
-        ",0)"
-      );
-    });
+    // const padding = 10;
+    // legend.attr("transform", function(d, i) {
+    //   return (
+    //     "translate(" +
+    //     (d3.sum(sectors, function(e, j) {
+    //       if (j < i) {
+    //         return legend.nodes()[j].getBBox().width;
+    //       } else {
+    //         return 0;
+    //       }
+    //     }) +
+    //       padding * i) +
+    //     ",0)"
+    //   );
+    // });
   }
 
   function bar(svg2, down, data, selector) {
