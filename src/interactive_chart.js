@@ -623,7 +623,7 @@ export const interactiveChart = () => {
       .attr("text-anchor", "middle")
       .text(
         d =>
-          `Largest ${round} rounds in the ${placeholder} inudstry in ${time +
+          `Largest ${round} rounds in the ${placeholder} Industry in ${time +
             2000}`
       );
 
@@ -873,7 +873,7 @@ export const interactiveChart = () => {
       .attr("text-anchor", "middle")
       .text(
         d =>
-          `Total Raised per Year in ${round} in the ${placeholder} Inudstry, 2000-2013`
+          `Total Raised per Year in ${round} in the ${placeholder} Industry, 2000-2013`
       );
   }
 
