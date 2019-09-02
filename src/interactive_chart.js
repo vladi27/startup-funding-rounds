@@ -2,8 +2,7 @@ import { SlowBuffer } from "buffer";
 import { parseSvg } from "d3-interpolate/src/transform/parse";
 
 export const interactiveChart = () => {
-
-  console.log("github test")
+  console.log("github test");
   let margin = { left: 80, right: 20, top: 50, bottom: 100 };
 
   let width = 900 - margin.left - margin.right;
@@ -44,8 +43,6 @@ export const interactiveChart = () => {
     .scaleLinear()
     .range([height, 0])
     .nice(7);
-
-
 
   let xAxis = d3.axisBottom(x0).tickSize(0);
 
@@ -160,12 +157,11 @@ export const interactiveChart = () => {
           .attr("y2", height - margin.bottom - 50)
       );
 
-      d3.json("./data/funding/test_data.json").then(function(data) {
-        testData = data
-      })
+  d3.json("./data/funding/test_data.json").then(function(data) {
+    testData = data;
+  });
 
   d3.json("./data/funding/clean_new_funding.json").then(function(data) {
-
     // console.log(data);
 
     // rawData = data;
@@ -193,10 +189,6 @@ export const interactiveChart = () => {
     //   .entries(rawData);
 
     cleanData = data;
-
-      
-
-    
 
     console.log(testData);
 
@@ -564,8 +556,13 @@ export const interactiveChart = () => {
 
     d3.selectAll("svg").remove();
 
+    $("#reset-button").text("Go Back");
+    $("#reset-button").on("click", function() {
+      restore();
+    });
+
     d3.select("#play-button").style("opacity", "0");
-    d3.select("#reset-button").style("opacity", "0");
+    // d3.select("#reset-button").style("opacity", "0");
     d3.select("#slider-div").style("opacity", "0");
     d3.select("#industry-select").style("opacity", "0");
     d3.select("#year").style("opacity", "0");
@@ -869,7 +866,7 @@ export const interactiveChart = () => {
       );
   }
 
-  function restore(d) {
+  function restore() {
     d3.selectAll("svg").remove();
 
     svg = d3
@@ -889,6 +886,13 @@ export const interactiveChart = () => {
       .style("text-anchor", "end")
       .style("font-weight", "bold")
       .text("Value");
+
+    $("#reset-button").text("Reset");
+
+    $("#reset-button").on("click", function() {
+      time = 0;
+      update(cleanData[0]);
+    });
 
     timeLabel = svg
       .append("text")
