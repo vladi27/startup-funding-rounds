@@ -12,6 +12,62 @@ export const interactiveChart = () => {
 
   var t = d3.transition().duration(750);
 
+  let abc =
+    "Hi there and  thanks for checking out my D3 visualization! The data above represents funding rounds for startups for the period of 2000 - 2013.";
+
+  let hero = "Rounds and Fundings Data";
+
+  let abc2 =
+    "The data is broken down by industries (web, mobile, software, web, medical), rounds (series A, series B, Angel, Series C+, Venture) and years.";
+
+  let abc3 =
+    " Press on the Play button to watch an animated overview of how much money companies have rasised over the years. Interested in learning more?";
+
+  let abc4 =
+    "Click the Pause button to stop the animation and to drill down to the industry && round that interests you the most.";
+  d3.select("#intro").append("span");
+
+  // .text(function(d) {
+  //   return hero;
+  // });
+
+  d3.selectAll("span")
+    .append("h1")
+
+    // .attr("class", "paragraph")
+    .text(function(d) {
+      return hero;
+    });
+  d3.selectAll("span")
+    .append("p")
+    .attr("dy", "0em")
+    .attr("class", "paragraph")
+    .text(function(d) {
+      return abc + abc2 + abc3 + abc4;
+    });
+
+  // d3.selectAll("span")
+  //   .append("p")
+  //   .attr("dy", "1em")
+  //   .attr("class", "paragraph")
+  //   .text(function(d) {
+  //     return abc2;
+  //   });
+  // d3.selectAll("span")
+  //   .append("p")
+  //   .attr("dy", "2em")
+  //   .attr("class", "paragraph")
+  //   .text(function(d) {
+  //     return abc3;
+  //   });
+  // d3.selectAll("span")
+  //   .append("p")
+  //   .attr("dy", "2em")
+  //   .attr("class", "paragraph")
+  //   .text(function(d) {
+  //     return abc4;
+  //   });
+
   let svg = d3
     .select("#inter")
     .append("svg")
@@ -280,6 +336,11 @@ export const interactiveChart = () => {
     }
   });
 
+  // let intro = "Explore";
+  // document.getElementById("text").innerHTML = intro;
+
+  
+
   function step() {
     // At the end of our data, loop back
     time = time < 14 ? time + 1 : 0;
@@ -326,9 +387,9 @@ export const interactiveChart = () => {
 
     svg
       .selectAll("rect")
-      .transition(t)
+      .transition(750)
       .delay(function(d) {
-        return Math.random() * 50;
+        return Math.random() * 100;
       })
       .attr("height", function(d) {
         return 0;
@@ -450,7 +511,7 @@ export const interactiveChart = () => {
       .append("g")
       .attr("class", "legend")
       .attr("transform", function(d, i) {
-        return "translate(10," + 25 * i + ")";
+        return "translate(14," + 25 * i + ")";
       });
 
     // legend
@@ -462,15 +523,15 @@ export const interactiveChart = () => {
     legend
       .append("rect")
       .attr("x", width - 10)
-      .attr("width", 18)
-      .attr("height", 18)
+      .attr("width", 14)
+      .attr("height", 14)
       .style("fill", function(d) {
         return color(d);
       });
 
     legend
       .append("text")
-      .attr("x", width - 24)
+      .attr("x", width - 15)
       .attr("y", 9)
       .attr("dy", ".35em")
       .style("text-anchor", "end")
@@ -600,6 +661,7 @@ export const interactiveChart = () => {
     d3.select("#slider-div").style("opacity", "0");
     d3.select("#industry-select").style("opacity", "0");
     d3.select("#year").style("opacity", "0");
+    d3.select("#intro").style("opacity", "0");
     d3.selectAll("text").style("opacity", "0");
 
     d3.select("#goback-button").style("opacity", "1");
@@ -628,10 +690,7 @@ export const interactiveChart = () => {
       .attr("width", width)
       .attr("height", height)
       .attr("cursor", "pointer")
-      .on("dblclick", d => {
-        d3.event.preventDefault();
-        restore(d);
-      });
+    
     // .on("click", d => up(svg, d));
 
     svg2.append("g").call(xAxis2);
@@ -807,10 +866,7 @@ export const interactiveChart = () => {
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       .attr("cursor", "pointer")
-      .on("dblclick", d => {
-        d3.event.preventDefault();
-        restore(d);
-      })
+     
 
       .append("g")
 
@@ -940,6 +996,7 @@ export const interactiveChart = () => {
     d3.select("#slider-div").style("opacity", "1");
     d3.select("#industry-select").style("opacity", "1");
     d3.selectAll("text").style("opacity", "1");
+    d3.select("#intro").style("opacity", "1");
 
     const duration = 750;
     const transition1 = d3.transition().duration(duration);

@@ -15,6 +15,11 @@
   margin-top: 5px;
 }
 
+/* .legend {
+  position: absolute;
+  right: 20px;
+} */
+
 #goback-button {
   float: left;
   cursor: pointer;
@@ -26,6 +31,10 @@
   float: left;
   margin-right: 10px;
   /* margin-top: -40px; */
+}
+
+.textarea {
+  text-align: center;
 }
 
 #industry-select {
@@ -51,6 +60,10 @@
   stroke: #fff;
 }
 
+#hero {
+  float: right;
+}
+
 text {
   font-size: 12px;
   fill: #fff;
@@ -72,6 +85,37 @@ div.tooltip {
   border: 0px;
   border-radius: 8px;
   pointer-events: none;
+}
+
+#paragraph {
+  float: center;
+}
+
+#textarea {
+  /* width: auto; */
+  height: 100%;
+
+  background: white;
+}
+
+#intro h1 {
+  color: orange;
+  font-family: "Open Sans", sans-serif;
+  font-size: 34px;
+  font-weight: 300;
+  line-height: 40px;
+  margin: -70px 0 0 16px;
+  text-align: center;
+}
+
+.paragraph {
+  color: white;
+  font-family: "Open Sans", sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 24px;
+  margin: 10px 30px;
+  text-align: center;
 }
 
 .d3-tip {
@@ -117,6 +161,16 @@ div.tooltip {
   fill: orangered;
 }
 
+footer {
+  position: absolute;
+  bottom: 135px;
+  /* right: 400px; */
+  /* left: 10px; */
+
+  right: 50px;
+  font-size: 5;
+}
+
 /* Southward tooltips */
 .d3-tip.s:after {
   content: "\25B2";
@@ -155,4 +209,23 @@ text.title {
   font-size: 22px;
   font-weight: 800;
   fill: orange;
+}
+
+.text-center {
+  color: white;
+  font-family: "Open Sans", sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.text-right {
+  font-size: 10px;
+  color: white;
+}
+
+#intro {
+  width: 100%;
+  height: 200px
+  margin-bottom: 50px;
 }
