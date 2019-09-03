@@ -167,8 +167,9 @@ footer {
   /* right: 400px; */
   /* left: 10px; */
 
-  right: 50px; */
-  font-size: 5;
+  /* right: 50px; */
+   font-size: 5; 
+   margin-right: 10px;
 }
 
 /* Southward tooltips */
