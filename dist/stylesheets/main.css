@@ -161,15 +161,15 @@ div.tooltip {
   fill: orangered;
 }
 
-footer {
-  position: absolute;
-  bottom: 135px;
+/* footer {
+  position: relative;
+  bottom: 0px;
   /* right: 400px; */
   /* left: 10px; */
 
-  right: 50px;
+  right: 0px;
   font-size: 5;
-}
+} */
 
 /* Southward tooltips */
 .d3-tip.s:after {
