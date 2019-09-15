@@ -12,8 +12,10 @@ export const interactiveChart = () => {
 
   var t = d3.transition().duration(750);
 
-  let abc =
-    "Hi there and  thanks for checking out my D3 visualization! The data above represents funding rounds for startups for the period of 2000 - 2013.";
+  let abc = "Hi there and thanks for checking out my D3 visualization!  ";
+
+  let abd =
+    " The bar chart above represents startup funding rounds for the period between 2000 and 2013.";
 
   let hero = "Rounds and Fundings Data";
 
@@ -21,10 +23,10 @@ export const interactiveChart = () => {
     "The data is broken down by industries (web, mobile, software, web, medical), rounds (series A, series B, Angel, Series C+, Venture) and years.";
 
   let abc3 =
-    " Press on the Play button to watch an animated overview of how much money companies have rasised over the years. Interested in learning more?";
+    " Press on the Play button to watch an animated show of how much money companies have rasised over these years. Interested in learning more?";
 
   let abc4 =
-    "Click the Pause button to stop the animation and to drill down to the industry && round that interests you the most.";
+    "Click Pause button to stop the animation, then click any bar to drill down to the industry and round that caught your attention.";
   d3.select("#intro").append("span");
 
   // .text(function(d) {
@@ -43,7 +45,7 @@ export const interactiveChart = () => {
     .attr("dy", "0em")
     .attr("class", "paragraph")
     .text(function(d) {
-      return abc + abc2 + abc3 + abc4;
+      return abc + "  " + " " + abd + " " + abc2 + " " + abc3 + " " + abc4;
     });
 
   // d3.selectAll("span")
@@ -338,8 +340,6 @@ export const interactiveChart = () => {
 
   // let intro = "Explore";
   // document.getElementById("text").innerHTML = intro;
-
-  
 
   function step() {
     // At the end of our data, loop back
@@ -689,8 +689,8 @@ export const interactiveChart = () => {
       .attr("pointer-events", "all")
       .attr("width", width)
       .attr("height", height)
-      .attr("cursor", "pointer")
-    
+      .attr("cursor", "pointer");
+
     // .on("click", d => up(svg, d));
 
     svg2.append("g").call(xAxis2);
@@ -866,7 +866,6 @@ export const interactiveChart = () => {
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       .attr("cursor", "pointer")
-     
 
       .append("g")
 
