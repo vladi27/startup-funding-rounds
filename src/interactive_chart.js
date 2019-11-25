@@ -12,21 +12,22 @@ export const interactiveChart = () => {
 
   var t = d3.transition().duration(750);
 
-  let abc = "Hi there and thanks for checking out my D3 visualization!  ";
+  let abc =
+    "Thanks for checking out my D3 visualization powered by the Crunchbase dataset!  ";
 
   let abd =
-    " The bar chart above represents startup funding rounds for the period between 2000 and 2013.";
+    " The bar chart above represents venture funding rounds for the period between 2000 and 2013.";
 
   let hero = "Rounds and Fundings Data";
 
   let abc2 =
-    "The data is broken down by industries (web, mobile, software, web, medical), rounds (series A, series B, Angel, Series C+, Venture) and years.";
+    "The data is segmented by industries (web, mobile, software, web, medical), rounds (series A, series B, Angel, Series C+, Venture) and years.";
 
   let abc3 =
-    " Press on the Play button to watch an animated show of how much money companies have rasised over these years. Interested in learning more?";
+    " Press on the Play button to watch an animated show of inudstries' aggregated funding rounds over these years. Interested in learning more?";
 
   let abc4 =
-    "Click Pause button to stop the animation, then click any bar to drill down to the industry and round that caught your attention.";
+    "Click on the Pause button to put animation on hold, then click any bar to drill down to the industry and round that caught your attention.";
   d3.select("#intro").append("span");
 
   // .text(function(d) {
