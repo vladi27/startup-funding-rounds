@@ -300,9 +300,6 @@ export const interactiveChart = () => {
     update(cleanData[0]);
   });
 
-  // let button = d3.select("#play-button");
-  // console.log(button);
-
   $("#play-button").on("click", function() {
     let button = $(this);
     if (button.text() == "Play") {
