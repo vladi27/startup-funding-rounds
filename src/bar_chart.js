@@ -34,8 +34,6 @@ export const chart = () => {
 
     data = data.slice().sort((a, b) => d3.ascending(a.year, b.year));
 
-    //console.log(data);
-
     data.forEach(d => {
       d.price = +d.price;
       //console.log(d.price);
