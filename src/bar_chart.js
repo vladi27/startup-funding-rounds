@@ -36,7 +36,6 @@ export const chart = () => {
 
     data.forEach(d => {
       d.price = +d.price;
-      //console.log(d.price);
     });
 
     let x = d3
