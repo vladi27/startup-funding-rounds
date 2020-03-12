@@ -87,8 +87,6 @@ export const chart = () => {
 
     let rects = g.selectAll("rect").data(data);
 
-    //console.log(height);
-
     rects
       .enter()
       .append("rect")
