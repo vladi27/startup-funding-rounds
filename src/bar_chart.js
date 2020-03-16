@@ -94,7 +94,6 @@ export const chart = () => {
         return y(d.price);
       })
       .attr("x", d => {
-        //console.log(x(d.year));
         return x(d.year);
       })
       .attr("height", d => {
