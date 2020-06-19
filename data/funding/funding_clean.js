@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-fs.readFile("./funding.json", "utf8", function(err, data) {
+fs.readFile("./funding.json", "utf8", function (err, data) {
   if (err) {
     console.log(err);
   } else {
@@ -13,16 +13,16 @@ fs.readFile("./funding.json", "utf8", function(err, data) {
     //   year: jsonArray.acquired_year
     // };
 
-    let newJson2 = jsonArray.map(obj => {
+    let newJson2 = jsonArray.map((obj) => {
       let newObj = {};
       if (
         obj.raised_amount_usd &&
         obj.funded_year > 1999 &&
-        (obj.company_category_code === "mobile" ||
-          obj.company_category_code === "web" ||
-          obj.company_category_code === "software" ||
+        (obj.company_category_code === "health" ||
+          obj.company_category_code === "enterprise" ||
+          obj.company_category_code === "finance" ||
           obj.company_category_code === "ecommerce" ||
-          obj.company_category_code === "medical") &&
+          obj.company_category_code === "analytics") &&
         (obj.funding_round_type === "series-a" ||
           obj.funding_round_type === "series-c+" ||
           obj.funding_round_type === "angel" ||
@@ -34,14 +34,14 @@ fs.readFile("./funding.json", "utf8", function(err, data) {
           round: obj.funding_round_type,
           company: obj.company_name,
           sector: obj.company_category_code,
-          funded: obj.funded_year
+          funded: obj.funded_year,
         };
         return newObj;
       }
     });
     //console.log(newJson2)
 
-    let newJson = newJson2.filter(obj => {
+    let newJson = newJson2.filter((obj) => {
       return obj != null;
     });
 
@@ -49,7 +49,7 @@ fs.readFile("./funding.json", "utf8", function(err, data) {
       "./new_funding.json",
       JSON.stringify(newJson, null, 4),
       "utf8",
-      function(err) {
+      function (err) {
         if (err) {
           console.log(err);
         } else {

@@ -3,6 +3,7 @@ import { interactiveChart } from "./interactive_chart";
 
 document.addEventListener("DOMContentLoaded", () => {
   // console.log("hello2");
-  chart();
+  //chart();
+
   interactiveChart();
 });

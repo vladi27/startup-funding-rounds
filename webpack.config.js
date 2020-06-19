@@ -5,7 +5,7 @@ module.exports = {
   entry: "./src/index.js",
   output: {
     path: path.join(__dirname, "dist"),
-    filename: "bundle.js"
+    filename: "bundle.js",
   },
   module: {
     rules: [
@@ -14,18 +14,18 @@ module.exports = {
         test: /\.js?$/,
         exclude: /node_modules/,
         options: {
-          presets: ["@babel/preset-env"]
-        }
-      }
-    ]
+          presets: ["@babel/preset-env"],
+        },
+      },
+    ],
   },
   resolve: {
-    extensions: [".js", ".jsx"]
+    extensions: [".js", ".jsx"],
   },
   devtool: "inline-source-map",
   devServer: {
     //contentBase: path.join(__dirname, "public")
-    contentBase: "./dist"
+    contentBase: "./dist",
   },
-  watch: true
+  watch: true,
 };

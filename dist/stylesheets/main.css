@@ -17,8 +17,14 @@
 
 /* .legend {
   position: absolute;
-  right: 20px;
+  padding-left: 100px;
 } */
+.legend-container {
+  align-items: center;
+  flex: 0 1 auto;
+  align-self: center;
+  margin: 0 auto;
+}
 
 #goback-button {
   float: left;
@@ -48,6 +54,10 @@
   margin-left: 10px;
   color: #fff;
 }
+
+/* .x-axis text {
+  font-size: 18px sans-serif;
+} */
 
 .line {
   fill: none;
@@ -163,14 +173,8 @@ div.tooltip {
 }
 
 footer {
-  position: relative;
-  /* bottom: 120px;
-  /* right: 400px; */
-  /* left: 10px; */
-
-  /* right: 50px; */
   font-size: 5;
-  margin-right: 10px;
+  padding-right: 10px;
 }
 
 /* Southward tooltips */
@@ -190,14 +194,14 @@ footer {
   left: 100%;
 }
 
-#linechart {
+/* #linechart {
   position: relative;
   margin-top: -50px;
   padding-left: 90px;
-}
+} */
 
 #drilldown {
-  margin-bottom: -70px;
+  float: left;
 }
 body {
   background: #2f4a6d;
@@ -208,8 +212,8 @@ body {
 }
 
 text.title {
-  font-size: 22px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 200;
   fill: orange;
 }
 
