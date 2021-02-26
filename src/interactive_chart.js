@@ -1,19 +1,20 @@
 import { SlowBuffer } from "buffer";
 import { parseSvg } from "d3-interpolate/src/transform/parse";
-import { selectAll } from "d3";
+import { selectAll, selectorAll } from "d3";
 
 d3.selection.prototype.toggleClass = function (className) {
   this.classed(className, !this.classed(className));
   return this;
 };
+
+//toggle CSS Class - using this to hide D3 canvas
 d3.selection.prototype.toggle = function () {
   var isHidden = this.style("display") == "none";
   return this.style("display", isHidden ? "inherit" : "none");
 };
 
 export const interactiveChart = () => {
-  console.log("github test");
-
+  // svg margins
   let margin = { left: 60, right: 30, top: 80, bottom: 50 };
 
   let width = document.getElementById("inter").clientWidth;
@@ -22,6 +23,7 @@ export const interactiveChart = () => {
 
   let flag = true;
 
+  //transition
   var t = d3.transition().duration(750);
 
   let abc =
@@ -83,8 +85,9 @@ export const interactiveChart = () => {
   //     return abc4;
   //   });
 
+  //append svg to our canvas
   let svg = d3
-    .select("#inter")
+    .select("#inter") //id=inter
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -96,8 +99,8 @@ export const interactiveChart = () => {
 
   let x1 = d3.scaleBand();
 
-  d3.select("#goback-button").toggle();
-  d3.select("#drilldown-container").toggle();
+  d3.select("#goback-button").toggle(); //hide go-back button
+  d3.select("#drilldown-container").toggle(); //toggle drilldown container
 
   let rawData;
   let testData;
@@ -112,6 +115,7 @@ export const interactiveChart = () => {
   //   // Y Scale
   let y = d3.scaleLinear().range([height, 0]).nice(7);
 
+  // hover lines for Y Scale
   const makeYLines = () => d3.axisLeft().scale(y);
 
   let xAxis = d3.axisBottom(x0).tickSize(0);
@@ -124,6 +128,7 @@ export const interactiveChart = () => {
     }
   });
 
+  //tool tip to show amount raised per company
   let tip = d3
     .tip()
     .attr("class", "d3-tip")
@@ -149,11 +154,12 @@ export const interactiveChart = () => {
       return text;
     });
 
+  //year label
   let timeLabel = svg
     .append("text")
     .attr("class", "label")
     .attr("y", height + 20)
-    .attr("x", width + 20)
+    .attr("x", width + 10)
     // .attr("font-size", "40px")
     // .attr("opacity", "0.4")
     .attr("text-anchor", "middle")
@@ -162,7 +168,9 @@ export const interactiveChart = () => {
   let sectors = ["health", "enterprise", "finance", "ecommerce", "analytics"];
   let rounds = ["angel", "series-a", "series-b", "series-c+", "venture"];
 
+  //creating x domains
   x0.domain(rounds);
+
   x1.domain(sectors).rangeRound([0, x0.bandwidth()]);
 
   x0.invert = function (x) {
@@ -172,9 +180,17 @@ export const interactiveChart = () => {
     return scale(x);
   };
 
+  //adding Y axis with the opacity of 0.
   svg.append("g").attr("class", "y axis").style("opacity", "0");
+  //adding grid lines with the opacity of 0
+  svg
+    .append("g")
+    .attr("class", "grid")
+    .call(makeYLines().tickSize(-width, 0, 0).tickFormat(""))
+    .style("opacity", "0");
   //.call(yAxis);
 
+  //adding label Value to the X axis
   svg
     .append("text")
     .attr("class", "label")
@@ -196,20 +212,19 @@ export const interactiveChart = () => {
   //   .ordinal()
   //   .range(["#ca0020", "#f4a582", "#d5d5d5", "#92c5de", "#0571b0"]);
 
+  //color scheme for the bar chart
   var color = d3.scaleOrdinal(d3.schemeSet1);
 
   let time = 0;
 
-  // d3.json("./data/funding/test_data.json").then(function (data) {
-  //   testData = data;
-  // });
-
+  //STREAM DATE TO D3 AND NESTING IT
   d3.json("./data/funding/new_funding.json").then(function (data) {
     // console.log(data);
 
     rawData = data;
 
-    let nestedData = d3
+    //nesting data array to give it the proper shape for D3
+    cleanData = d3
       .nest()
       //     // .key(function(d) {
       //     //   return d.funded;
@@ -231,7 +246,7 @@ export const interactiveChart = () => {
       })
       .entries(rawData);
 
-    cleanData = nestedData.slice();
+    // cleanData = nestedData.slice();
 
     testData = d3
       .nest()
@@ -284,271 +299,30 @@ export const interactiveChart = () => {
     //   })
     // ]);
 
+    //adding X axis to the bar chart
     var xTicks = svg
       .append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
 
-    xTicks.selectAll("text").style("font-size", 16).style("fill", "white");
+    //styling X axis value labels
+    xTicks.selectAll("text").style("font-size", 18).style("fill", "white");
 
     // d3.interval(function() {
     //   // At the end of our data, loop back
     //   time = time < 14 ? time + 1 : 0;
     //   update(cleanData[time]);
     // }, 5000);
+
+    //drawingLegend
     drawLegend();
 
-    // First run of the visualization
+    // First run of the bar chart visualization
     update(cleanData[0]);
   });
 
-  $("#play-button").on("click", function () {
-    let button = $(this);
-    if (button.text() == "Play") {
-      button.text("Pause");
-      interval = setInterval(step, 3000);
-      step();
-    } else {
-      button.text("Play");
-      clearInterval(interval);
-    }
-  });
-
-  $("#reset-button").on("click", function () {
-    //clearInterval(interval);
-    time = 0;
-    update(cleanData[time]);
-  });
-
-  $("#goback-button").on("click", function () {
-    restore();
-  });
-
-  // $("#industry-select").on("change", function () {
-  //   clearInterval(interval);
-  //   interval = setInterval(step, 3000);
-  //   step(cleanData[time]);
-  // });
-
-  d3.select("#industry-select").on("change", function () {
-    if (d3.select("#play-button").text() === "Pause") {
-      const current = time;
-      d3.selectAll("rect.current").interrupt();
-      clearInterval(interval);
-      interval = setInterval(step, 3000);
-      step(cleanData[current]);
-    } else {
-      update(cleanData[time]);
-    }
-  });
-
-  $("#date-slider").slider({
-    max: 2013,
-    min: 2000,
-    step: 1,
-    animate: "slow",
-    slide: function (event, ui) {
-      time = ui.value - 2000;
-      update(cleanData[time]);
-    },
-  });
-
-  // let intro = "Explore";
-  // document.getElementById("text").innerHTML = intro;
-
-  function step() {
-    // At the end of our data, loop back
-    time = time < 14 ? time + 1 : 0;
-    update(cleanData[time]);
-  }
-
-  function update(data) {
-    // data = data.slice().array.forEach(element => {});
-
-    if (data == undefined) {
-      return;
-    }
-    console.log(data);
-    y.domain([
-      0,
-      d3.max(data.values, function (rounds) {
-        console.log(rounds);
-        return d3.max(rounds.values, function (d) {
-          if (d3.select("#industry-select").node().value !== "all") {
-            let selected = d3.select("#industry-select").node().value;
-            console.log(selected, d, "selected");
-            if (d.key === selected) {
-              return d.value;
-            }
-          } else {
-            return d.value;
-          }
-          return 1000000;
-        });
-      }),
-    ]);
-
-    svg
-      .selectAll("g.y.axis")
-      .transition()
-      .duration(1000)
-      .delay(300)
-      .style("opacity", "1")
-      .call(yAxis);
-
-    //.call(yAxis);
-    svg.selectAll(".slice").exit().remove();
-
-    let slice2 = svg
-      .selectAll(".slice")
-      .data(data.values)
-      .enter()
-      .append("g")
-      .attr("class", "g")
-      //.classed("current", true)
-      .attr("transform", function (d) {
-        return "translate(" + x0(d.key) + ",0)";
-      });
-
-    console.log("slice,", slice2);
-
-    let rects = slice2.selectAll("rect").data(function (d) {
-      return d.values.filter(function (d) {
-        if (d3.select("#industry-select").node().value == "all") {
-          return d;
-        } else {
-          return d.key == d3.select("#industry-select").node().value;
-        }
-      });
-    });
-
-    console.log(rects);
-
-    svg
-      .selectAll("rect.current")
-
-      // rects
-      .transition(750)
-      .delay(function (d) {
-        return Math.random() * 100;
-      })
-      .attr("height", function (d) {
-        return 0;
-      })
-      .attr("y", function (d) {
-        if (y(0)) {
-          return y(0);
-        }
-        return 0;
-      })
-      .remove();
-
-    rects
-      .enter()
-      .append("rect")
-      .attr("class", "current")
-      // .attr("class", "enter")
-      .attr("width", x1.bandwidth)
-      .attr("x", function (d) {
-        //console.log(x1(d.key), d.key);
-        return x1(d.key);
-      })
-      .attr("data-legend", function (d) {
-        return d.key;
-      })
-      .style("fill", function (d) {
-        return color(d.key);
-      })
-      .attr("y", function (d) {
-        return y(0);
-      })
-      .attr("height", function (d) {
-        return 0;
-      })
-      .on("click", function (d) {
-        let round = x0.invert(
-          parseSvg(d3.select(this.parentNode).attr("transform")).translateX
-        );
-
-        // d3.select("g").
-        // transition(t).remove();
-        drillDown(d, slice2, round);
-      })
-      .attr("cursor", "pointer")
-      .on("mouseover", function (d) {
-        d3.select(this).style("fill", d3.rgb(color(d.key)).darker(2));
-      })
-      .on("mouseout", function (d) {
-        d3.select(this).style("fill", color(d.key));
-      })
-      .on("change", function (d) {
-        if (d3.select("#play-button").text() === "Play") {
-          d3.selectAll("rect")
-            .transition()
-            .duration(100)
-            .attr("y", function (d) {
-              return y(d.value);
-            })
-            .attr("height", function (d) {
-              return height - y(d.value);
-            });
-        }
-      })
-      .on("change", function (d) {
-        if (d3.select("#play-button").text() === "Play") {
-          d3.selectAll("rect")
-            .transition()
-            .duration(100)
-            .attr("y", function (d) {
-              return y(d.value);
-            })
-            .attr("height", function (d) {
-              return height - y(d.value);
-            });
-        }
-      })
-
-      //.merge(rects)
-      .transition(t)
-      .delay(function (d) {
-        return Math.random() * 1000;
-      })
-      //.duration(500)
-      .attr("y", function (d) {
-        return y(d.value);
-      })
-      .attr("height", function (d) {
-        console.log(d);
-        return height - y(d.value);
-      });
-
-    console.log(rects);
-
-    //svg.selectAll(".slice").exit();
-    console.log(rects);
-
-    let rects2 = slice2.selectAll("rect");
-    let button2 = d3.select("#play-button");
-
-    //svg.selectAll("g.legend").remove();
-
-    //drawLegend.call(this);
-
-    // d3.selectAll(".y")
-    //   .transition()
-    //   .duration(1000)
-    //   .delay(300)
-    //   .style("opacity", "1");
-
-    timeLabel.text(+(time + 2000));
-
-    $("#year")[0].innerHTML = +(time + 2000);
-
-    $("#date-slider").slider("value", +(time + 2000));
-  }
-
-  function drawLegend() {
+  const drawLegend = () => {
     var legendHolder = svg
 
       .append("g")
@@ -637,7 +411,392 @@ export const interactiveChart = () => {
     //     ",0)"
     //   );
     // });
-  }
+  };
+
+  const update = (data) => {
+    // data = data.slice().array.forEach(element => {});
+
+    if (data == undefined) {
+      return;
+    }
+    console.log(data);
+
+    //defining y domain
+    y.domain([
+      0,
+      d3.max(data.values, function (rounds) {
+        console.log(rounds);
+        return d3.max(rounds.values, function (d) {
+          if (d3.select("#industry-select").node().value !== "all") {
+            let selected = d3.select("#industry-select").node().value;
+            console.log(selected, d, "selected");
+            if (d.key === selected) {
+              return d.value;
+            }
+          } else {
+            return d.value;
+          }
+          return 1000000;
+        });
+      }),
+    ]);
+
+    //changing Y axis opacity to 1
+    svg
+      .selectAll("g.y.axis")
+      .transition()
+      .duration(1000)
+      .delay(300)
+      .style("opacity", "1")
+      .call(yAxis);
+
+    //chaging grid opacity to 1
+    svg
+      .selectAll(".grid")
+      .transition()
+      .duration(1000)
+      .delay(300)
+      .style("opacity", "1")
+      .call(makeYLines);
+
+    //svg.selectAll(".slice").exit().remove();
+
+    let slice2 = svg
+      .selectAll(".slice")
+      .data(data.values)
+      .enter()
+      .append("g")
+      .attr("class", "g")
+      //.classed("current", true)
+      .attr("transform", function (d) {
+        return "translate(" + x0(d.key) + ",0)";
+      });
+
+    console.log("slice,", slice2);
+
+    //entering bar chart group
+    let rects = slice2
+      .selectAll("rect")
+      .data(function (d) {
+        return d.values.filter(function (d) {
+          if (d3.select("#industry-select").node().value == "all") {
+            return d;
+          } else {
+            return d.key == d3.select("#industry-select").node().value;
+          }
+        });
+      })
+      .enter()
+      .append("g");
+
+    console.log(rects);
+
+    //removing previous bar chart group
+    svg
+      .selectAll("rect.current")
+
+      // rects
+      .transition(750)
+      .delay(function (d) {
+        return Math.random() * 100;
+      })
+      .attr("height", function (d) {
+        return 0;
+      })
+      .attr("y", function (d) {
+        if (y(0)) {
+          return y(0);
+        }
+        return 0;
+      })
+      .remove();
+
+    //adding rectangles
+    rects
+      .append("rect")
+      .attr("class", "current")
+      // .attr("class", "enter")
+      .attr("width", x1.bandwidth)
+      .attr("x", function (d) {
+        //console.log(x1(d.key), d.key);
+        //x1 - sectors
+        return x1(d.key);
+      })
+      .attr("data-legend", function (d) {
+        return d.key;
+      })
+      .style("fill", function (d) {
+        return color(d.key);
+      })
+      .attr("y", function (d) {
+        return y(0);
+      })
+      .attr("height", function (d) {
+        return 0;
+      })
+      .on("click", function (d) {
+        let round = x0.invert(
+          parseSvg(d3.select(this.parentNode.parentNode).attr("transform"))
+            .translateX
+        );
+
+        // d3.select("g").
+        // transition(t).remove();
+        //calling this function to drillDown in a particular industry on a click
+        drillDown(d, slice2, round);
+      })
+      .attr("cursor", "pointer")
+      .on("mouseenter", function (d, i) {
+        const line = svg
+          .append("line")
+          .attr("id", "limit")
+          .attr("x1", 0)
+          .attr("y1", y(d.value))
+          .attr("x2", width)
+          .attr("y2", y(d.value));
+      })
+      .on("mouseover", function (d) {
+        d3.select(this).style("fill", d3.rgb(color(d.key)).darker(2));
+      })
+      .on("mouseout", function (d) {
+        d3.select(this).style("fill", color(d.key));
+      })
+      .on("mouseleave", function () {
+        svg.selectAll("#limit").remove();
+      })
+      .on("change", function (d) {
+        if (d3.select("#play-button").text() === "Play") {
+          d3.selectAll("rect")
+            .transition()
+            .duration(100)
+            .attr("y", function (d) {
+              return y(d.value);
+            })
+            .attr("height", function (d) {
+              return height - y(d.value);
+            });
+        }
+      })
+
+      //.merge(rects)
+      .transition(t)
+      .delay(function (d) {
+        return Math.random() * 1000;
+      })
+      //.duration(500)
+      .attr("y", function (d) {
+        return y(d.value);
+      })
+      .attr("height", function (d) {
+        console.log(d);
+        return height - y(d.value);
+      });
+
+    console.log(rects);
+
+    //svg.selectAll(".slice").exit();
+    console.log(rects);
+
+    let rects2 = slice2.selectAll("rect");
+    let button2 = d3.select("#play-button");
+
+    // rects
+    //   .append("text")
+    //   .attr("class", "value")
+    //   .attr("x", (a) => (x0.bandwidth() - x1(key)) / 3)
+    //   .attr("y", (a) => {
+    //     console.log(y);
+    //     return y(a.value);
+    //   })
+    //   .attr("text-anchor", "middle")
+    //   .text((a) => `$${a.value / 1000000}M`);
+
+    // svg.selectAll(".grid").remove();
+
+    //drawLegend.call(this);
+
+    // d3.selectAll(".y")
+    //   .transition()
+    //   .duration(1000)
+    //   .delay(300)
+    //   .style("opacity", "1");
+
+    //increment timeLabel
+    timeLabel.text(+(time + 2000));
+
+    $("#year")[0].innerHTML = +(time + 2000);
+
+    $("#date-slider").slider("value", +(time + 2000));
+  };
+
+  //BUTTON EVENT LISTENERS
+  $("#play-button").on("click", function () {
+    let button = $(this);
+    if (button.text() == "Play") {
+      button.text("Pause");
+      interval = setInterval(step, 3000);
+      step();
+    } else {
+      button.text("Play");
+      clearInterval(interval);
+    }
+  });
+
+  const step = () => {
+    // At the end of our data, loop back
+    time = time < 14 ? time + 1 : 0;
+    update(cleanData[time]);
+  };
+
+  $("#reset-button").on("click", function () {
+    //clearInterval(interval);
+    time = 0;
+    update(cleanData[time]);
+  });
+
+  $("#goback-button").on("click", function () {
+    restore();
+  });
+
+  const restore = () => {
+    d3.selectAll("svg").remove();
+    //d3.select("#drilldown-container svg").remove();
+
+    svg = d3
+      .select("#inter")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+    console.log(svg);
+    svg
+      .append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .style("font-weight", "bold")
+      .text("Value");
+
+    timeLabel = svg
+      .append("text")
+      .attr("class", "label")
+      .attr("y", height + 20)
+      .attr("x", width + 10)
+      // .attr("font-size", "40px")
+      // .attr("opacity", "0.4")
+      .attr("text-anchor", "middle")
+      .text(`${time + 2000}`);
+
+    // d3.select("#goback-button").style("opacity", "0");
+    d3.select("#drilldown-container").toggle();
+    d3.select("#goback-button").toggle();
+
+    // d3.select("#play-button").style("opacity", "1");
+    // d3.select("#reset-button").style("opacity", "1");
+    // d3.select("#slider-div").style("opacity", "1");
+    // d3.select("#industry-select").style("opacity", "1");
+    // d3.selectAll("text").style("opacity", "1");
+    // d3.select("#intro").style("opacity", "1");
+
+    d3.select("#play-button").toggle();
+    // d3.select("#reset-button").style("opacity", "0");
+    d3.select("#reset-button").toggle();
+    // d3.select("#slider-div").style("opacity", "0");
+    d3.select("#slider-div").toggle();
+    // d3.select("#industry-select").style("opacity", "0");
+    d3.select("#industry-select").toggle();
+    // d3.select("#year").style("opacity", "0");
+    d3.select("#year").toggle();
+    // d3.select("#intro").style("opacity", "0");
+
+    // d3.selectAll("text").style("opacity", "0");
+    //d3.selectAll("text").toggle();
+
+    //d3.select("#goback-button").style("opacity", "1");
+    //d3.select("#goback-button").toggle();
+
+    const duration = 750;
+    const transition1 = d3.transition().duration(duration);
+    const transition2 = transition1.transition();
+
+    const exit = svg.selectAll(".enter").attr("class", "exit");
+    exit.selectAll("text").remove();
+    // Entering nodes immediately obscure the clicked-on bar, so hide it.
+    // exit.selectAll("rect").attr("fill-opacity", p => (p === d ? 0 : null));
+
+    // Transition exiting bars to fade out.
+    exit
+      .selectAll("rects")
+      .transition(transition2)
+      .attr("transform", (d, i) => `translate(${-barStep * i + 20}, 0)`)
+      //.attr("width", d => 0)
+      // .attr("fill-opacity", 0)
+
+      // .attr("transform", stack(d.index))
+      // .transition(transition1)
+      // .attr("transform", stagger())
+      .remove();
+
+    d3.selectAll("g.y-axis").remove();
+
+    d3.selectAll("g.x-axis").remove();
+
+    svg
+      .append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .transition()
+      .call(xAxis);
+
+    svg.append("g").attr("class", "y axis").style("opacity", "0");
+    svg
+      .append("g")
+      .attr("class", "grid")
+      .call(makeYLines().tickSize(-width, 0, 0).tickFormat(""))
+      .style("opacity", "0");
+
+    d3.select("#year").style("opacity", "1");
+
+    update(cleanData[time]);
+  };
+
+  // $("#industry-select").on("change", function () {
+  //   clearInterval(interval);
+  //   interval = setInterval(step, 3000);
+  //   step(cleanData[time]);
+  // });
+
+  //dropdown selection
+  d3.select("#industry-select").on("change", function () {
+    if (d3.select("#play-button").text() === "Pause") {
+      const current = time;
+      d3.selectAll("rect.current").interrupt();
+      clearInterval(interval);
+      interval = setInterval(step, 3000);
+      step(cleanData[current]);
+    } else {
+      update(cleanData[time]);
+    }
+  });
+
+  //slider element
+  $("#date-slider").slider({
+    max: 2013,
+    min: 2000,
+    step: 1,
+    animate: "slow",
+    slide: function (event, ui) {
+      time = ui.value - 2000;
+      update(cleanData[time]);
+    },
+  });
+
+  // let intro = "Explore";
+  // document.getElementById("text").innerHTML = intro;
 
   function bar(svg2, down, data, selector, x3) {
     const g = svg2
@@ -658,7 +817,7 @@ export const interactiveChart = () => {
 
     bar
       .append("text")
-      .attr("x", 13)
+      .attr("x", 14)
       .attr("y", (27 * (1 - 0.1)) / 2)
       .attr("dy", ".35em")
       .text((d) => d.company.slice(0, 3).toUpperCase());
@@ -722,6 +881,21 @@ export const interactiveChart = () => {
     d3.selectAll("#inter svg").remove();
     d3.select("#drilldown-container").toggle();
 
+    const drillSvg = d3
+      .select("#svg-container")
+      .append("svg")
+      .attr("width", 1200)
+      .attr("height", 350);
+
+    drillSvg
+      .append("g")
+      .attr("id", "first")
+      .attr("transform", "translate(" + 0 + ", " + 30 + ")");
+    drillSvg
+      .append("g")
+      .attr("id", "second")
+      .attr("transform", "translate(" + 560 + ", " + 30 + ")");
+
     // $("#play-button").text("Go Back");
     // $("#play-button").on("click", function() {
     //   let button = $(this);
@@ -751,14 +925,15 @@ export const interactiveChart = () => {
     // g.selectAll("g.x.axis").remove();
     // slice.remove();
 
-    const svg = d3.select("svg");
+    const svgNew = d3.selectAll("svg");
+    console.log(svgNew);
     const margin3 = { top: 30, right: 20, bottom: 60, left: 15 };
-    const width3 = +svg.attr("width") / 2.25 - margin3.left - margin3.right;
-    const height3 = +svg.attr("height") / 1 - margin3.top - margin3.bottom;
+    const width3 = +svgNew.attr("width") / 2.25 - margin3.left - margin3.right;
+    const height3 = +svgNew.attr("height") / 1 - margin3.top - margin3.bottom;
 
-    console.log(svg, margin3, width3, height3);
+    console.log(svgNew, margin3, width3, height3);
 
-    const gContainer = svg
+    const gContainer = svgNew
       .append("g")
       .attr("transform", "translate(0, 30)")
       .classed("weekly-container", true);
@@ -780,6 +955,7 @@ export const interactiveChart = () => {
 
     g.call(tip);
     const x3 = d3.scaleLinear().range([margin3.left, width3 - margin3.right]);
+    console.log(data);
 
     x3.domain([0, data[0].amountRaised]);
     console.log(x3.domain());
@@ -810,7 +986,7 @@ export const interactiveChart = () => {
             .append("line")
             .attr("stroke", "currentColor")
             .attr("y1", margin3.top)
-            .attr("y2", height3)
+            .attr("y2", height3 + margin.top)
         );
 
     g.append("g").call(xAxis2);
@@ -822,7 +998,7 @@ export const interactiveChart = () => {
     g.append("text")
       .attr("class", "title")
       .attr("x", width3 / 2)
-      .attr("y", -10)
+      .attr("y", -30)
       .attr("text-anchor", "middle")
       .text(
         (d) =>
@@ -1073,103 +1249,5 @@ export const interactiveChart = () => {
         (d) =>
           `Total Raised per Year in ${round} in the ${placeholder} Industry, 2000-2013`
       );
-  }
-
-  function restore() {
-    d3.selectAll("svg").remove();
-
-    svg = d3
-      .select("#inter")
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
-
-    svg
-      .append("text")
-      .attr("class", "label")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .style("font-weight", "bold")
-      .text("Value");
-
-    timeLabel = svg
-      .append("text")
-      .attr("class", "label")
-      .attr("y", height - 90)
-      .attr("x", width - 40)
-      // .attr("font-size", "40px")
-      // .attr("opacity", "0.4")
-      .attr("text-anchor", "middle")
-      .text(`${time + 2000}`);
-
-    // d3.select("#goback-button").style("opacity", "0");
-    d3.select("#goback-button").toggle();
-
-    // d3.select("#play-button").style("opacity", "1");
-    // d3.select("#reset-button").style("opacity", "1");
-    // d3.select("#slider-div").style("opacity", "1");
-    // d3.select("#industry-select").style("opacity", "1");
-    // d3.selectAll("text").style("opacity", "1");
-    // d3.select("#intro").style("opacity", "1");
-
-    d3.select("#play-button").toggle();
-    // d3.select("#reset-button").style("opacity", "0");
-    d3.select("#reset-button").toggle();
-    // d3.select("#slider-div").style("opacity", "0");
-    d3.select("#slider-div").toggle();
-    // d3.select("#industry-select").style("opacity", "0");
-    d3.select("#industry-select").toggle();
-    // d3.select("#year").style("opacity", "0");
-    d3.select("#year").toggle();
-    // d3.select("#intro").style("opacity", "0");
-
-    // d3.selectAll("text").style("opacity", "0");
-    //d3.selectAll("text").toggle();
-
-    //d3.select("#goback-button").style("opacity", "1");
-    //d3.select("#goback-button").toggle();
-
-    const duration = 750;
-    const transition1 = d3.transition().duration(duration);
-    const transition2 = transition1.transition();
-
-    const exit = svg.selectAll(".enter").attr("class", "exit");
-    exit.selectAll("text").remove();
-    // Entering nodes immediately obscure the clicked-on bar, so hide it.
-    // exit.selectAll("rect").attr("fill-opacity", p => (p === d ? 0 : null));
-
-    // Transition exiting bars to fade out.
-    exit
-      .selectAll("rects")
-      .transition(transition2)
-      .attr("transform", (d, i) => `translate(${-barStep * i + 20}, 0)`)
-      //.attr("width", d => 0)
-      // .attr("fill-opacity", 0)
-
-      // .attr("transform", stack(d.index))
-      // .transition(transition1)
-      // .attr("transform", stagger())
-      .remove();
-
-    d3.selectAll("g.y-axis").remove();
-
-    d3.selectAll("g.x-axis").remove();
-
-    svg
-      .append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .transition()
-      .call(xAxis);
-
-    svg.append("g").attr("class", "y axis").style("opacity", "0");
-
-    d3.select("#year").style("opacity", "1");
-
-    update(cleanData[time]);
   }
 };

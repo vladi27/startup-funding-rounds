@@ -58,6 +58,23 @@
 /* .x-axis text {
   font-size: 18px sans-serif;
 } */
+line#limit {
+  stroke: #fed966;
+  stroke-width: 3;
+  stroke-dasharray: 3 6;
+}
+
+.grid path {
+  stroke-width: 0;
+}
+
+.grid .tick line {
+  stroke: #9faaae;
+  stroke-opacity: 0.3;
+}
+text.value {
+  font-size: 14px;
+}
 
 .line {
   fill: none;
