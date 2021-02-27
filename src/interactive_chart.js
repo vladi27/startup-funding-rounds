@@ -15,11 +15,18 @@ d3.selection.prototype.toggle = function () {
 
 export const interactiveChart = () => {
   // svg margins
-  let margin = { left: 60, right: 30, top: 80, bottom: 50 };
+  let margin = { left: 60, right: 30, top: 60, bottom: 50 };
+  const splitMargin = { top: 30, right: 20, bottom: 60, left: 15 };
 
-  let width = document.getElementById("inter").clientWidth;
+  const containerWidth = document.getElementById("inter").clientWidth;
+  const containerHeight = containerWidth;
 
-  let height = width / 3.236;
+  let width =
+    document.getElementById("inter").clientWidth / 2 -
+    margin.left -
+    margin.right;
+
+  let height = width * 1.15;
 
   let flag = true;
 
@@ -42,11 +49,12 @@ export const interactiveChart = () => {
 
   let abc4 =
     "Click on the Pause button to put animation on hold, then click any bar to drill down to the industry and round that caught your attention.";
-  //d3.select("#intro").append("span");
+  // d3.select("#intro")
+  //   .append("span")
 
-  // .text(function(d) {
-  //   return hero;
-  // });
+  //   .text(function (d) {
+  //     return hero;
+  //   });
 
   // d3.selectAll("span")
   //   .append("h1")
@@ -61,31 +69,68 @@ export const interactiveChart = () => {
   //   .attr("class", "paragraph")
   //   .text(function (d) {
   //     return abc + "  " + " " + abd + " " + abc2 + " " + abc3 + " " + abc4;
-  //   });
+  //   })
+  //   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // d3.selectAll("span")
   //   .append("p")
   //   .attr("dy", "1em")
   //   .attr("class", "paragraph")
-  //   .text(function(d) {
+  //   .text(function (d) {
   //     return abc2;
   //   });
   // d3.selectAll("span")
   //   .append("p")
   //   .attr("dy", "2em")
   //   .attr("class", "paragraph")
-  //   .text(function(d) {
+  //   .text(function (d) {
   //     return abc3;
   //   });
   // d3.selectAll("span")
   //   .append("p")
   //   .attr("dy", "2em")
   //   .attr("class", "paragraph")
-  //   .text(function(d) {
+  //   .text(function (d) {
   //     return abc4;
   //   });
 
   //append svg to our canvas
+  d3.select("#paragraph").append("h1").text(hero);
+  d3.select("#paragraph")
+    .append("p")
+    .text(abc + abd + abc2 + abc3);
+
+  $(function () {
+    var div = $("#paragraph");
+    // var divWidth = div.width;
+
+    div.css("height", height);
+    //div.css("width", divWidth);
+  });
+
+  function resize() {
+    var div = $("#paragraph");
+    var curWidth = document.getElementById("inter").clientWidth;
+    // const chart = d3
+    //   .select("#inter")
+    //   .attr("width", curWidth * 0.6)
+    //   .attr("height", curWidth * 1.15);
+    const windowWidth = $(window).width();
+    console.log(windowWidth);
+    if (windowWidth < 1050) {
+      console.log("width");
+      div.css("right", "auto");
+      div.css("top", "auto");
+      div.css("textAlign", "center");
+      div.css("width", "100%");
+    } else {
+      div.css("right", 0);
+      div.css("top", 0);
+      div.css("width", curWidth * 0.3);
+    }
+  }
+  window.addEventListener("resize", resize);
+
   let svg = d3
     .select("#inter") //id=inter
     .append("svg")
@@ -332,7 +377,7 @@ export const interactiveChart = () => {
     //.attr("transform", "translate(" + 0 + "," + height - margin.bottom + ")");
 
     var dataL = 0;
-    var offset = 100;
+    var offset = 90;
     const legend = legendHolder
       .selectAll(".legend")
 
@@ -364,7 +409,7 @@ export const interactiveChart = () => {
 
     legend
       .append("rect")
-      .attr("x", 0)
+      .attr("x", -40)
 
       .attr("y", height + 40)
       .attr("width", 10)
@@ -374,10 +419,11 @@ export const interactiveChart = () => {
       });
     legend
       .append("text")
-      .attr("x", 15)
+      .attr("x", -25)
       .attr("y", height + 48)
       //.attr("dy", ".35em")
       .text(function (d, i) {
+        if (d === "ecommerce") return "ecom";
         return d;
       })
       .attr("class", "textselected")
@@ -694,6 +740,7 @@ export const interactiveChart = () => {
     // d3.select("#goback-button").style("opacity", "0");
     d3.select("#drilldown-container").toggle();
     d3.select("#goback-button").toggle();
+    d3.select("#paragraph").toggle();
 
     // d3.select("#play-button").style("opacity", "1");
     // d3.select("#reset-button").style("opacity", "1");
@@ -760,6 +807,8 @@ export const interactiveChart = () => {
       .style("opacity", "0");
 
     d3.select("#year").style("opacity", "1");
+
+    drawLegend();
 
     update(cleanData[time]);
   };
@@ -880,6 +929,7 @@ export const interactiveChart = () => {
 
     d3.selectAll("#inter svg").remove();
     d3.select("#drilldown-container").toggle();
+    d3.select("#paragraph").toggle();
 
     const drillSvg = d3
       .select("#svg-container")

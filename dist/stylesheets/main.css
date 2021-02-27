@@ -114,9 +114,9 @@ div.tooltip {
   pointer-events: none;
 }
 
-#paragraph {
+/* #paragraph {
   float: center;
-}
+} */
 
 #textarea {
   /* width: auto; */
@@ -136,14 +136,25 @@ div.tooltip {
   line-height: 25px;
 }
 
-.paragraph {
+/* .paragraph {
   color: white;
   font-family: "Open Sans", sans-serif;
   font-size: 15px;
   font-weight: 400;
   line-height: 1.5;
+  margin-top: 50px;
+   .attr("class", "paragraph")
   margin: 30px 50px;
-  text-align: center;
+  text-align: right;
+} */
+
+#paragraph {
+  width: 40%;
+  margin: 50px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  text-align: left;
 }
 
 .d3-tip {
