@@ -98,7 +98,7 @@ export const interactiveChart = () => {
   d3.select("#paragraph").append("h1").text(hero);
   d3.select("#paragraph")
     .append("p")
-    .text(abc + abd + abc2 + abc3);
+    .html(abc + "<br>" + abd + abc2 + abc3);
 
   $(function () {
     var div = $("#paragraph");
@@ -117,7 +117,7 @@ export const interactiveChart = () => {
     //   .attr("height", curWidth * 1.15);
     const windowWidth = $(window).width();
     console.log(windowWidth);
-    if (windowWidth < 1050) {
+    if (windowWidth < 1000) {
       console.log("width");
       div.css("right", "auto");
       div.css("top", "auto");
@@ -127,6 +127,7 @@ export const interactiveChart = () => {
       div.css("right", 0);
       div.css("top", 0);
       div.css("width", curWidth * 0.3);
+      div.css("textAlign", "left");
     }
   }
   window.addEventListener("resize", resize);
@@ -165,13 +166,16 @@ export const interactiveChart = () => {
 
   let xAxis = d3.axisBottom(x0).tickSize(0);
 
-  let yAxis = d3.axisLeft(y).tickFormat(function (d) {
-    if (d !== 0 && d < 1000000000) {
-      return "$" + d / 1000000 + "M";
-    } else if (d !== 0) {
-      return "$" + d / 1000000000 + "B";
-    }
-  });
+  let yAxis = d3
+    .axisLeft(y)
+    .tickFormat(function (d) {
+      if (d !== 0 && d < 1000000000) {
+        return "$" + d / 1000000 + "M";
+      } else if (d !== 0) {
+        return "$" + d / 1000000000 + "B";
+      }
+    })
+    .tickSize(10, 0);
 
   //tool tip to show amount raised per company
   let tip = d3
@@ -181,19 +185,16 @@ export const interactiveChart = () => {
     .offset([-10, 0])
     .html(function (d) {
       let text =
-        "<strong>Company:</strong> <span style='color:red'>" +
-        d.company +
-        "</span><br>";
+        "Company:<span style='color:red'>" + " " + d.company + "</span><br>";
       text +=
-        "<strong>Sector:</strong> <span style='color:red;text-transform:capitalize'>" +
+        "Sector:<span style='color:red;text-transform:capitalize'>" +
+        " " +
         d.sector +
         "</span><br>";
+      text += "Round:<span style='color:red'>" + " " + d.round + "</span><br>";
       text +=
-        "<strong>Round:</strong> <span style='color:red'>" +
-        d.round +
-        "</span><br>";
-      text +=
-        "<strong>Amount Raised:</strong> <span style='color:red'>" +
+        "Amount Raised:<span style='color:red'>" +
+        " " +
         d3.format("$,.0f")(d.amountRaised) +
         "</span><br>";
       return text;
@@ -204,9 +205,9 @@ export const interactiveChart = () => {
     .append("text")
     .attr("class", "label")
     .attr("y", height + 20)
-    .attr("x", width + 10)
-    // .attr("font-size", "40px")
-    // .attr("opacity", "0.4")
+    .attr("x", width + 11)
+    .attr("font-size", "40px")
+    .attr("opacity", "0.4")
     .attr("text-anchor", "middle")
     .text("2000");
 
@@ -352,7 +353,7 @@ export const interactiveChart = () => {
       .call(xAxis);
 
     //styling X axis value labels
-    xTicks.selectAll("text").style("font-size", 18).style("fill", "white");
+    // xTicks.selectAll("text").style("font-size", 18).style("fill", "white");
 
     // d3.interval(function() {
     //   // At the end of our data, loop back
@@ -423,7 +424,7 @@ export const interactiveChart = () => {
       .attr("y", height + 48)
       //.attr("dy", ".35em")
       .text(function (d, i) {
-        if (d === "ecommerce") return "ecom";
+        if (d === "ecommerce") return "eCom";
         return d;
       })
       .attr("class", "textselected")
@@ -495,6 +496,9 @@ export const interactiveChart = () => {
       .delay(300)
       .style("opacity", "1")
       .call(yAxis);
+
+    svg.selectAll("g.y.axis text").style("font-size", 15);
+    svg.selectAll("g.x.axis text").style("font-size", 18);
 
     //chaging grid opacity to 1
     svg
@@ -716,7 +720,6 @@ export const interactiveChart = () => {
       .append("g")
       .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-    console.log(svg);
     svg
       .append("text")
       .attr("class", "label")
@@ -869,7 +872,8 @@ export const interactiveChart = () => {
       .attr("x", 14)
       .attr("y", (27 * (1 - 0.1)) / 2)
       .attr("dy", ".35em")
-      .text((d) => d.company.slice(0, 3).toUpperCase());
+      .text((d) => d.company.slice(0, 3).toUpperCase())
+      .style("font-size", 13);
 
     bar
       .append("rect")
@@ -935,16 +939,7 @@ export const interactiveChart = () => {
       .select("#svg-container")
       .append("svg")
       .attr("width", 1200)
-      .attr("height", 350);
-
-    drillSvg
-      .append("g")
-      .attr("id", "first")
-      .attr("transform", "translate(" + 0 + ", " + 30 + ")");
-    drillSvg
-      .append("g")
-      .attr("id", "second")
-      .attr("transform", "translate(" + 560 + ", " + 30 + ")");
+      .attr("height", 600);
 
     // $("#play-button").text("Go Back");
     // $("#play-button").on("click", function() {
@@ -1014,8 +1009,7 @@ export const interactiveChart = () => {
       .attr("fill", "none")
       .attr("pointer-events", "all")
       .attr("width", width3)
-      .attr("height", height3)
-      .attr("cursor", "pointer");
+      .attr("height", height3);
 
     // .on("click", d => up(svg, d));
     let xAxis2 = (g) => {
@@ -1035,6 +1029,7 @@ export const interactiveChart = () => {
           g
             .append("line")
             .attr("stroke", "currentColor")
+            .attr("stroke-width", "3")
             .attr("y1", margin3.top)
             .attr("y2", height3 + margin.top)
         );
@@ -1043,6 +1038,7 @@ export const interactiveChart = () => {
 
     g.append("g").call(yAxis2);
 
+    g.selectAll("g.x-axis text").style("font-size", 13);
     let placeholder = d.key;
 
     g.append("text")
@@ -1052,7 +1048,7 @@ export const interactiveChart = () => {
       .attr("text-anchor", "middle")
       .text(
         (d) =>
-          `Largest ${round} rounds in the ${placeholder} Industry in ${
+          `Biggest ${round} rounds in  ${placeholder} industry in ${
             time + 2000
           }`
       );
@@ -1171,7 +1167,7 @@ export const interactiveChart = () => {
 
   function buildLineChart(lineChartData, placeholder, round) {
     const svg = d3.select("svg");
-    var margin2 = { top: 30, right: 60, bottom: 60, left: 15 },
+    var margin2 = { top: 30, right: 60, bottom: 60, left: 25 },
       width2 = +svg.attr("width") / 1.75 - margin2.left - margin2.right,
       height2 = +svg.attr("height") / 1 - margin2.top - margin2.bottom;
     let n = 13;
@@ -1235,6 +1231,8 @@ export const interactiveChart = () => {
       .attr("transform", "translate(0," + height2 + ")")
       .call(d3.axisBottom(xScale3).tickFormat(d3.format("d")));
 
+    svg.selectAll("g.x.axis text").style("font-size", 13);
+
     svg3
       .append("g")
       .attr("class", "y axis")
@@ -1247,6 +1245,8 @@ export const interactiveChart = () => {
           }
         })
       );
+
+    svg.selectAll("g.y.axis text").style("font-size", 15);
 
     svg3
       .append("path")
@@ -1280,10 +1280,17 @@ export const interactiveChart = () => {
         div.transition().duration(200).style("opacity", 0.9);
         div
           .html(
-            i + 2000 + ": " + " $" + d3.format(".2s")(d["y"]).replace(/G/, "B")
+            i +
+              2000 +
+              ": " +
+              "<span style='color:red'>$" +
+              d3.format(".2s")(d["y"]).replace(/G/, "B") +
+              "</span>"
           )
           .style("left", d3.event.pageX + "px")
-          .style("top", d3.event.pageY - 28 + "px");
+          .style("top", d3.event.pageY - 28 + "px")
+          .style("background", "black");
+        // .style("color", "red");
       })
       .on("mouseout", function (d) {
         div.transition().duration(500).style("opacity", 0);
@@ -1296,8 +1303,11 @@ export const interactiveChart = () => {
       .attr("y", -30)
       .attr("text-anchor", "middle")
       .text(
-        (d) =>
-          `Total Raised per Year in ${round} in the ${placeholder} Industry, 2000-2013`
+        (d) => `Total $ raised per year, ${round}, ${placeholder} industry`
       );
   }
+};
+
+const appendParagraph = () => {
+  const hero = "Rounds and Fundings Data";
 };

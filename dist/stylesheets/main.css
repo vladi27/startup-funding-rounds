@@ -1,3 +1,7 @@
+body {
+  font: "Open Sans", sans-serif;
+}
+
 #inter #drilldown #linechart svg {
   margin-left: auto;
   margin-right: auto;
@@ -55,8 +59,8 @@
   color: #fff;
 }
 
-/* .x-axis text {
-  font-size: 18px sans-serif;
+/* .xaxis text {
+  font-size: 25px sans-serif;
 } */
 line#limit {
   stroke: #fed966;
@@ -78,7 +82,7 @@ text.value {
 
 .line {
   fill: none;
-  stroke: #ffab00;
+  stroke: darkorange;
   stroke-width: 3;
 }
 
@@ -107,8 +111,9 @@ div.tooltip {
   width: 60px;
   height: 40px;
   padding: 2px;
-  font: 12px sans-serif;
-  background: lightsteelblue;
+  font: 13px sans-serif;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
   border: 0px;
   border-radius: 8px;
   pointer-events: none;
@@ -125,15 +130,14 @@ div.tooltip {
   background: white;
 }
 
-#intro h1 {
+#paragraph h1 {
   color: orange;
   font-family: "Open Sans", sans-serif;
-  font-size: 34px;
+  font-size: 30px;
   font-weight: 300;
-  line-height: 40px;
-  margin: -70px 0 0 16px;
+  line-height: 50px;
+
   text-align: center;
-  line-height: 25px;
 }
 
 /* .paragraph {
@@ -152,6 +156,11 @@ div.tooltip {
   width: 40%;
   margin: 50px;
   position: absolute;
+  color: white;
+  font-size: 20x;
+  font-weight: 400;
+  line-height: 1.5;
+  font-family: "Open Sans", sans-serif;
   right: 0;
   top: 0;
   text-align: left;
@@ -159,7 +168,7 @@ div.tooltip {
 
 .d3-tip {
   line-height: 1;
-  font-weight: bold;
+
   padding: 12px;
   background: rgba(0, 0, 0, 0.8);
   color: #fff;
@@ -171,7 +180,7 @@ div.tooltip {
 .d3-tip:after {
   box-sizing: border-box;
   display: inline;
-  font-size: 10px;
+  font-size: 8px;
   width: 100%;
   line-height: 1;
   color: rgba(0, 0, 0, 0.8);
@@ -240,9 +249,11 @@ body {
 }
 
 text.title {
-  font-size: 15px;
-  font-weight: 200;
+  font-weight: 500;
   fill: orange;
+  color: orange;
+  font-family: "Open Sans", sans-serif;
+  font-size: 20px;
 }
 
 .text-center {
