@@ -1,6 +1,7 @@
 import { SlowBuffer } from "buffer";
 import { parseSvg } from "d3-interpolate/src/transform/parse";
 import { selectAll, selectorAll } from "d3";
+import { toggleDrilldown, toggleMainPage } from "./toggle";
 
 d3.selection.prototype.toggleClass = function (className) {
   this.classed(className, !this.classed(className));
@@ -13,13 +14,86 @@ d3.selection.prototype.toggle = function () {
   return this.style("display", isHidden ? "inherit" : "none");
 };
 
+const appendParagraph = (height) => {
+  const hero = "Rounds and Fundings Data";
+  const curWidth = document.getElementById("inter").clientWidth;
+
+  const sentence1 =
+    "Thanks for checking out my D3 visualization powered by the Crunchbase dataset!";
+
+  const sentence2 =
+    "The bar chart above represents venture funding rounds for the period between 2000 and 2013.";
+
+  const sentence3 =
+    "The data is segmented by industries (web, mobile, software, web, medical), rounds (series A, series B, Angel, Series C+, Venture) and years.";
+
+  const sentence4 =
+    "Press on the Play button to watch an animated show of inudstries' aggregated funding rounds over these years. Interested in learning more?";
+
+  const sentence5 =
+    "Click on the Pause button to put animation on hold, then click any bar to drill down to the industry and round that caught your attention.";
+
+  d3.select("#paragraph").append("h1").text(hero);
+  d3.select("#paragraph")
+    .append("p")
+    .html(
+      "Thanks for checking out my D3 visualization powered by the" +
+        " " +
+        "<a href='https://crunchbase.com'>Crunchbase</a>" +
+        " " +
+        "dataset!" +
+        "<br>" +
+        sentence2 +
+        sentence3 +
+        sentence4 +
+        sentence5
+    );
+
+  //adding dynamic width;
+
+  const paragraph = document.getElementById("paragraph");
+
+  paragraph.style.height = height + "px";
+  paragraph.style.width = curWidth * 0.4 + "px";
+  window.addEventListener("resize", resizeParagraph);
+};
+
+const resizeParagraph = () => {
+  const curWidth = document.getElementById("inter").clientWidth;
+  const div = document.getElementById("paragraph");
+  // const chart = d3
+  //   .select("#inter")
+  //   .attr("width", curWidth * 0.6)
+  //   .attr("height", curWidth * 1.15);
+  const windowWidth = window.innerWidth;
+  console.log(windowWidth);
+  if (windowWidth < 1000) {
+    console.log("width");
+    // div.css("right", "auto");
+    // div.css("top", "auto");
+    // div.css("textAlign", "center");
+    // div.css("width", "100%");
+    div.style.right = "auto";
+    div.style.top = "auto";
+    // div.style.textAlign = "center";
+    div.style.width = "100%";
+  } else {
+    // div.css("right", 0);
+    // div.css("top", 0);
+    // div.css("width", curWidth * 0.3);
+    // div.css("textAlign", "left");
+    div.style.right = "0";
+    div.style.top = "0";
+    // div.style.textAlign = "left";
+    div.style.width = curWidth * 0.3 + "px";
+    // div.style.width = "40%";
+  }
+};
+
 export const interactiveChart = () => {
   // svg margins
   let margin = { left: 60, right: 30, top: 60, bottom: 50 };
   const splitMargin = { top: 30, right: 20, bottom: 60, left: 15 };
-
-  const containerWidth = document.getElementById("inter").clientWidth;
-  const containerHeight = containerWidth;
 
   let width =
     document.getElementById("inter").clientWidth / 2 -
@@ -28,109 +102,11 @@ export const interactiveChart = () => {
 
   let height = width * 1.15;
 
-  let flag = true;
-
   //transition
   var t = d3.transition().duration(750);
 
-  let abc =
-    "Thanks for checking out my D3 visualization powered by the Crunchbase dataset!  ";
-
-  let abd =
-    " The bar chart above represents venture funding rounds for the period between 2000 and 2013.";
-
-  let hero = "Rounds and Fundings Data";
-
-  let abc2 =
-    "The data is segmented by industries (web, mobile, software, web, medical), rounds (series A, series B, Angel, Series C+, Venture) and years.";
-
-  let abc3 =
-    " Press on the Play button to watch an animated show of inudstries' aggregated funding rounds over these years. Interested in learning more?";
-
-  let abc4 =
-    "Click on the Pause button to put animation on hold, then click any bar to drill down to the industry and round that caught your attention.";
-  // d3.select("#intro")
-  //   .append("span")
-
-  //   .text(function (d) {
-  //     return hero;
-  //   });
-
-  // d3.selectAll("span")
-  //   .append("h1")
-
-  //   // .attr("class", "paragraph")
-  //   .text(function (d) {
-  //     return hero;
-  //   });
-  // d3.selectAll("span")
-  //   .append("p")
-  //   .attr("dy", "0em")
-  //   .attr("class", "paragraph")
-  //   .text(function (d) {
-  //     return abc + "  " + " " + abd + " " + abc2 + " " + abc3 + " " + abc4;
-  //   })
-  //   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  // d3.selectAll("span")
-  //   .append("p")
-  //   .attr("dy", "1em")
-  //   .attr("class", "paragraph")
-  //   .text(function (d) {
-  //     return abc2;
-  //   });
-  // d3.selectAll("span")
-  //   .append("p")
-  //   .attr("dy", "2em")
-  //   .attr("class", "paragraph")
-  //   .text(function (d) {
-  //     return abc3;
-  //   });
-  // d3.selectAll("span")
-  //   .append("p")
-  //   .attr("dy", "2em")
-  //   .attr("class", "paragraph")
-  //   .text(function (d) {
-  //     return abc4;
-  //   });
-
-  //append svg to our canvas
-  d3.select("#paragraph").append("h1").text(hero);
-  d3.select("#paragraph")
-    .append("p")
-    .html(abc + "<br>" + abd + abc2 + abc3);
-
-  $(function () {
-    var div = $("#paragraph");
-    // var divWidth = div.width;
-
-    div.css("height", height);
-    //div.css("width", divWidth);
-  });
-
-  function resize() {
-    var div = $("#paragraph");
-    var curWidth = document.getElementById("inter").clientWidth;
-    // const chart = d3
-    //   .select("#inter")
-    //   .attr("width", curWidth * 0.6)
-    //   .attr("height", curWidth * 1.15);
-    const windowWidth = $(window).width();
-    console.log(windowWidth);
-    if (windowWidth < 1000) {
-      console.log("width");
-      div.css("right", "auto");
-      div.css("top", "auto");
-      div.css("textAlign", "center");
-      div.css("width", "100%");
-    } else {
-      div.css("right", 0);
-      div.css("top", 0);
-      div.css("width", curWidth * 0.3);
-      div.css("textAlign", "left");
-    }
-  }
-  window.addEventListener("resize", resize);
+  appendParagraph(height);
+  toggleDrilldown();
 
   let svg = d3
     .select("#inter") //id=inter
@@ -145,8 +121,8 @@ export const interactiveChart = () => {
 
   let x1 = d3.scaleBand();
 
-  d3.select("#goback-button").toggle(); //hide go-back button
-  d3.select("#drilldown-container").toggle(); //toggle drilldown container
+  // d3.select("#goback-button").toggle(); //hide go-back button
+  // d3.select("#drilldown-container").toggle(); //toggle drilldown container
 
   let rawData;
   let testData;
@@ -711,6 +687,8 @@ export const interactiveChart = () => {
   const restore = () => {
     d3.selectAll("svg").remove();
     //d3.select("#drilldown-container svg").remove();
+    toggleDrilldown();
+    toggleMainPage();
 
     svg = d3
       .select("#inter")
@@ -741,9 +719,9 @@ export const interactiveChart = () => {
       .text(`${time + 2000}`);
 
     // d3.select("#goback-button").style("opacity", "0");
-    d3.select("#drilldown-container").toggle();
-    d3.select("#goback-button").toggle();
-    d3.select("#paragraph").toggle();
+    // d3.select("#drilldown-container").toggle();
+    // d3.select("#goback-button").toggle();
+    // d3.select("#paragraph").toggle();
 
     // d3.select("#play-button").style("opacity", "1");
     // d3.select("#reset-button").style("opacity", "1");
@@ -752,15 +730,15 @@ export const interactiveChart = () => {
     // d3.selectAll("text").style("opacity", "1");
     // d3.select("#intro").style("opacity", "1");
 
-    d3.select("#play-button").toggle();
-    // d3.select("#reset-button").style("opacity", "0");
-    d3.select("#reset-button").toggle();
-    // d3.select("#slider-div").style("opacity", "0");
-    d3.select("#slider-div").toggle();
-    // d3.select("#industry-select").style("opacity", "0");
-    d3.select("#industry-select").toggle();
+    // d3.select("#play-button").toggle();
+    // // d3.select("#reset-button").style("opacity", "0");
+    // d3.select("#reset-button").toggle();
+    // // d3.select("#slider-div").style("opacity", "0");
+    // d3.select("#slider-div").toggle();
+    // // d3.select("#industry-select").style("opacity", "0");
+    // d3.select("#industry-select").toggle();
     // d3.select("#year").style("opacity", "0");
-    d3.select("#year").toggle();
+    // d3.select("#year").toggle();
     // d3.select("#intro").style("opacity", "0");
 
     // d3.selectAll("text").style("opacity", "0");
@@ -932,8 +910,10 @@ export const interactiveChart = () => {
     let data = newData3;
 
     d3.selectAll("#inter svg").remove();
-    d3.select("#drilldown-container").toggle();
-    d3.select("#paragraph").toggle();
+    // d3.select("#drilldown-container").toggle();
+    // d3.select("#paragraph").toggle();
+    toggleMainPage();
+    toggleDrilldown();
 
     const drillSvg = d3
       .select("#svg-container")
@@ -950,22 +930,22 @@ export const interactiveChart = () => {
     // });
 
     // d3.select("#play-button").style("opacity", "0");
-    d3.select("#play-button").toggle();
-    // d3.select("#reset-button").style("opacity", "0");
-    d3.select("#reset-button").toggle();
-    // d3.select("#slider-div").style("opacity", "0");
-    d3.select("#slider-div").toggle();
-    // d3.select("#industry-select").style("opacity", "0");
-    d3.select("#industry-select").toggle();
-    // d3.select("#year").style("opacity", "0");
-    d3.select("#year").toggle();
-    // d3.select("#intro").style("opacity", "0");
+    // d3.select("#play-button").toggle();
+    // // d3.select("#reset-button").style("opacity", "0");
+    // d3.select("#reset-button").toggle();
+    // // d3.select("#slider-div").style("opacity", "0");
+    // d3.select("#slider-div").toggle();
+    // // d3.select("#industry-select").style("opacity", "0");
+    // d3.select("#industry-select").toggle();
+    // // d3.select("#year").style("opacity", "0");
+    // d3.select("#year").toggle();
+    // // d3.select("#intro").style("opacity", "0");
 
-    // d3.selectAll("text").style("opacity", "0");
-    //d3.selectAll("text").toggle();
+    // // d3.selectAll("text").style("opacity", "0");
+    // //d3.selectAll("text").toggle();
 
-    //d3.select("#goback-button").style("opacity", "1");
-    d3.select("#goback-button").toggle();
+    // //d3.select("#goback-button").style("opacity", "1");
+    // d3.select("#goback-button").toggle();
 
     // g.selectAll("g.x.axis").remove();
     // slice.remove();
@@ -1306,8 +1286,4 @@ export const interactiveChart = () => {
         (d) => `Total $ raised per year, ${round}, ${placeholder} industry`
       );
   }
-};
-
-const appendParagraph = () => {
-  const hero = "Rounds and Fundings Data";
 };

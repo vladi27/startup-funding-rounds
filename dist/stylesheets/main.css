@@ -153,7 +153,7 @@ div.tooltip {
 } */
 
 #paragraph {
-  width: 40%;
+  /* width: 40%; */
   margin: 50px;
   position: absolute;
   color: white;
@@ -163,7 +163,7 @@ div.tooltip {
   font-family: "Open Sans", sans-serif;
   right: 0;
   top: 0;
-  text-align: left;
+  text-align: justify;
 }
 
 .d3-tip {
