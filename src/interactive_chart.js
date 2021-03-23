@@ -2,6 +2,7 @@ import { SlowBuffer } from "buffer";
 import { parseSvg } from "d3-interpolate/src/transform/parse";
 import { selectAll, selectorAll } from "d3";
 import { toggleDrilldown, toggleMainPage } from "./toggle";
+import { handleDrillDown } from "./drilldown";
 
 d3.selection.prototype.toggleClass = function (className) {
   this.classed(className, !this.classed(className));
@@ -105,7 +106,10 @@ export const interactiveChart = () => {
   //transition
   var t = d3.transition().duration(750);
 
+  //append description paragraph
   appendParagraph(height);
+
+  //hide the drilldown elements
   toggleDrilldown();
 
   let svg = d3
@@ -121,20 +125,15 @@ export const interactiveChart = () => {
 
   let x1 = d3.scaleBand();
 
-  // d3.select("#goback-button").toggle(); //hide go-back button
-  // d3.select("#drilldown-container").toggle(); //toggle drilldown container
-
-  let rawData;
-  let testData;
-
   let interval;
-  let cleanData;
+  let barChartData;
+  let drillDownData;
 
   let barStep = 22;
 
   let barPadding = 3 / barStep;
 
-  //   // Y Scale
+  // Y Scale
   let y = d3.scaleLinear().range([height, 0]).nice(7);
 
   // hover lines for Y Scale
@@ -187,7 +186,7 @@ export const interactiveChart = () => {
     .attr("text-anchor", "middle")
     .text("2000");
 
-  let sectors = ["health", "enterprise", "finance", "ecommerce", "analytics"];
+  let sectors = ["medical", "web", "mobile", "ecommerce", "software"];
   let rounds = ["angel", "series-a", "series-b", "series-c+", "venture"];
 
   //creating x domains
@@ -223,17 +222,6 @@ export const interactiveChart = () => {
     .style("font-weight", "bold")
     .text("Value");
 
-  // var xAxisGroup = g
-  //     .append("g")
-  //     .attr("class", "x axis")
-  //     .attr("transform", "translate(0," + height + ")");
-
-  //   var yAxisGroup = g.append("g").attr("class", "y axis");
-
-  // var color = d3.scale
-  //   .ordinal()
-  //   .range(["#ca0020", "#f4a582", "#d5d5d5", "#92c5de", "#0571b0"]);
-
   //color scheme for the bar chart
   var color = d3.scaleOrdinal(d3.schemeSet1);
 
@@ -243,10 +231,8 @@ export const interactiveChart = () => {
   d3.json("./data/funding/new_funding.json").then(function (data) {
     // console.log(data);
 
-    rawData = data;
-
     //nesting data array to give it the proper shape for D3
-    cleanData = d3
+    barChartData = d3
       .nest()
       //     // .key(function(d) {
       //     //   return d.funded;
@@ -266,11 +252,11 @@ export const interactiveChart = () => {
           return d.amountRaised;
         });
       })
-      .entries(rawData);
+      .entries(data);
 
     // cleanData = nestedData.slice();
 
-    testData = d3
+    drillDownData = d3
       .nest()
       //     // .key(function(d) {
       //     //   return d.funded;
@@ -283,43 +269,7 @@ export const interactiveChart = () => {
         return d.sector;
       })
 
-      .entries(rawData);
-
-    //cleanData = data;
-
-    console.log(cleanData);
-
-    // var rounds = cleanData.map(function(d) {
-    //   return d.values
-    //     .filter(ele => {
-    //       if (ele.key) return ele.key;
-    //     })
-
-    //     .map(ele2 => {
-    //       return ele2.key;
-    //     });
-    // });
-
-    let elements = cleanData[0].values.map((ele) => {
-      return ele;
-    });
-
-    // x1.domain(sectors).rangeRound([0, x0.bandwidth()]);
-
-    // x1.domain(
-    //   cleanData[0].values[0].values.map(ele => {
-    //     return ele.key;
-    //   })
-    // ).rangeRound([0, x0.bandwidth()]);
-
-    // y.domain([
-    //   0,
-    //   d3.max(cleanData[0].values, function(rounds) {
-    //     return d3.max(rounds.values, function(d) {
-    //       return d.value;
-    //     });
-    //   })
-    // ]);
+      .entries(data);
 
     //adding X axis to the bar chart
     var xTicks = svg
@@ -328,20 +278,11 @@ export const interactiveChart = () => {
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
 
-    //styling X axis value labels
-    // xTicks.selectAll("text").style("font-size", 18).style("fill", "white");
-
-    // d3.interval(function() {
-    //   // At the end of our data, loop back
-    //   time = time < 14 ? time + 1 : 0;
-    //   update(cleanData[time]);
-    // }, 5000);
-
     //drawingLegend
     drawLegend();
 
     // First run of the bar chart visualization
-    update(cleanData[0]);
+    update(barChartData[0]);
   });
 
   const drawLegend = () => {
@@ -487,7 +428,7 @@ export const interactiveChart = () => {
 
     //svg.selectAll(".slice").exit().remove();
 
-    let slice2 = svg
+    let slice = svg
       .selectAll(".slice")
       .data(data.values)
       .enter()
@@ -498,10 +439,10 @@ export const interactiveChart = () => {
         return "translate(" + x0(d.key) + ",0)";
       });
 
-    console.log("slice,", slice2);
+    console.log("slice,", slice);
 
     //entering bar chart group
-    let rects = slice2
+    let rects = slice
       .selectAll("rect")
       .data(function (d) {
         return d.values.filter(function (d) {
@@ -566,10 +507,8 @@ export const interactiveChart = () => {
             .translateX
         );
 
-        // d3.select("g").
-        // transition(t).remove();
-        //calling this function to drillDown in a particular industry on a click
-        drillDown(d, slice2, round);
+        //calling this function to drillDown on a specific industry when clicked
+        handleDrillDown(d, round, drillDownData, time);
       })
       .attr("cursor", "pointer")
       .on("mouseenter", function (d, i) {
@@ -623,9 +562,6 @@ export const interactiveChart = () => {
     //svg.selectAll(".slice").exit();
     console.log(rects);
 
-    let rects2 = slice2.selectAll("rect");
-    let button2 = d3.select("#play-button");
-
     // rects
     //   .append("text")
     //   .attr("class", "value")
@@ -671,13 +607,13 @@ export const interactiveChart = () => {
   const step = () => {
     // At the end of our data, loop back
     time = time < 14 ? time + 1 : 0;
-    update(cleanData[time]);
+    update(barChartData[time]);
   };
 
   $("#reset-button").on("click", function () {
     //clearInterval(interval);
     time = 0;
-    update(cleanData[time]);
+    update(barChartData[time]);
   });
 
   $("#goback-button").on("click", function () {
@@ -717,35 +653,6 @@ export const interactiveChart = () => {
       // .attr("opacity", "0.4")
       .attr("text-anchor", "middle")
       .text(`${time + 2000}`);
-
-    // d3.select("#goback-button").style("opacity", "0");
-    // d3.select("#drilldown-container").toggle();
-    // d3.select("#goback-button").toggle();
-    // d3.select("#paragraph").toggle();
-
-    // d3.select("#play-button").style("opacity", "1");
-    // d3.select("#reset-button").style("opacity", "1");
-    // d3.select("#slider-div").style("opacity", "1");
-    // d3.select("#industry-select").style("opacity", "1");
-    // d3.selectAll("text").style("opacity", "1");
-    // d3.select("#intro").style("opacity", "1");
-
-    // d3.select("#play-button").toggle();
-    // // d3.select("#reset-button").style("opacity", "0");
-    // d3.select("#reset-button").toggle();
-    // // d3.select("#slider-div").style("opacity", "0");
-    // d3.select("#slider-div").toggle();
-    // // d3.select("#industry-select").style("opacity", "0");
-    // d3.select("#industry-select").toggle();
-    // d3.select("#year").style("opacity", "0");
-    // d3.select("#year").toggle();
-    // d3.select("#intro").style("opacity", "0");
-
-    // d3.selectAll("text").style("opacity", "0");
-    //d3.selectAll("text").toggle();
-
-    //d3.select("#goback-button").style("opacity", "1");
-    //d3.select("#goback-button").toggle();
 
     const duration = 750;
     const transition1 = d3.transition().duration(duration);
@@ -791,7 +698,7 @@ export const interactiveChart = () => {
 
     drawLegend();
 
-    update(cleanData[time]);
+    update(barChartData[time]);
   };
 
   // $("#industry-select").on("change", function () {
@@ -807,9 +714,9 @@ export const interactiveChart = () => {
       d3.selectAll("rect.current").interrupt();
       clearInterval(interval);
       interval = setInterval(step, 3000);
-      step(cleanData[current]);
+      step(barChartData[current]);
     } else {
-      update(cleanData[time]);
+      update(barChartData[time]);
     }
   });
 
@@ -821,7 +728,7 @@ export const interactiveChart = () => {
     animate: "slow",
     slide: function (event, ui) {
       time = ui.value - 2000;
-      update(cleanData[time]);
+      update(barChartData[time]);
     },
   });
 
@@ -841,7 +748,7 @@ export const interactiveChart = () => {
       .data(data)
       .join("g")
       .attr("cursor", "pointer")
-      //  .on("click", d => update(cleanData[time]))
+      //  .on("click", d => update(barChartData[time]))
       .on("mouseover", tip.show)
       .on("mouseout", tip.hide);
 
@@ -851,7 +758,7 @@ export const interactiveChart = () => {
       .attr("y", (27 * (1 - 0.1)) / 2)
       .attr("dy", ".35em")
       .text((d) => d.company.slice(0, 3).toUpperCase())
-      .style("font-size", 13);
+      .style("font-size", 12);
 
     bar
       .append("rect")
@@ -867,7 +774,7 @@ export const interactiveChart = () => {
   }
 
   function drillDown(d, slice, round) {
-    let unsortedData = testData[time];
+    let unsortedData = drillDownData[time];
     const duration = 700;
     const transition1 = d3.transition().duration(duration);
     const transition2 = transition1.transition();
@@ -875,9 +782,6 @@ export const interactiveChart = () => {
     console.log(unsortedData);
     console.log(d);
     console.log(round);
-    console.log(testData);
-
-    let ab = testData.map((ele) => Object.values(ele));
 
     let newData = unsortedData.values.filter((ele) => {
       if (ele.key === d.key) {
@@ -1113,7 +1017,7 @@ export const interactiveChart = () => {
 
     while (i < 14) {
       let obj = {};
-      let unsortedData = testData[i];
+      let unsortedData = drillDownData[i];
 
       let newData = unsortedData.values.filter((ele) => {
         if (ele.key === d.key) {

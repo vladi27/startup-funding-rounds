@@ -18,11 +18,11 @@ fs.readFile("./funding.json", "utf8", function (err, data) {
       if (
         obj.raised_amount_usd &&
         obj.funded_year > 1999 &&
-        (obj.company_category_code === "health" ||
-          obj.company_category_code === "enterprise" ||
-          obj.company_category_code === "finance" ||
+        (obj.company_category_code === "medical" ||
+          obj.company_category_code === "software" ||
+          obj.company_category_code === "web" ||
           obj.company_category_code === "ecommerce" ||
-          obj.company_category_code === "analytics") &&
+          obj.company_category_code === "mobile") &&
         (obj.funding_round_type === "series-a" ||
           obj.funding_round_type === "series-c+" ||
           obj.funding_round_type === "angel" ||
