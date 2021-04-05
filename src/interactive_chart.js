@@ -8,23 +8,23 @@ const sectors = ["medical", "web", "mobile", "ecommerce", "software"];
 const rounds = ["angel", "series-a", "series-b", "series-c+", "venture"];
 
 const appendParagraph = (height) => {
-  const hero = "Rounds and Fundings Data";
+  const hero = "Venture Rounds";
   const curWidth = document.getElementById("inter").clientWidth;
 
   const sentence1 =
     "Thanks for checking out my D3 visualization powered by the Crunchbase dataset!";
 
   const sentence2 =
-    "The bar chart above represents venture funding rounds for the period between 2000 and 2013.";
+    "The bar chart represents venture financing events that occurred between 2000 and 2013.";
 
   const sentence3 =
-    "The data is segmented by industries (web, mobile, software, web, medical), rounds (series A, series B, Angel, Series C+, Venture) and years.";
+    " The data is segmented by industries (web, mobile, software, eCommerce, medical), rounds (series A, series B, Angel, Series C and later, Venture) and years.";
 
   const sentence4 =
-    "Press on the Play button to watch an animated show of inudstries' aggregated funding rounds over these years. Interested in learning more?";
+    "Press the Play button to watch an animated show of aggregated funding rounds over these years. Interested in learning more?";
 
   const sentence5 =
-    "Click on the Pause button to put animation on hold, then click any bar to drill down to the industry and round that caught your attention.";
+    " Hit the Pause button to put animation on hold, and then click on the relevant bar to drill down to the industry and round that caught your attention. Happy explorations!";
 
   d3.select("#paragraph").append("h1").text(hero);
   d3.select("#paragraph")
@@ -34,10 +34,11 @@ const appendParagraph = (height) => {
         " " +
         "<a href='https://crunchbase.com'>Crunchbase</a>" +
         " " +
-        "dataset!" +
+        "data!" +
         "<br>" +
         sentence2 +
         sentence3 +
+        "<br>" +
         sentence4 +
         sentence5
     );
@@ -47,7 +48,7 @@ const appendParagraph = (height) => {
   paragraph.style.height = height + "px";
   paragraph.style.width = curWidth * 0.4 + "px";
 
-  // event listener to change paragraph position when resizing the window
+  // event listener to optimize for mobile
   window.addEventListener("resize", resizeParagraph);
 };
 
@@ -213,7 +214,6 @@ export const interactiveChart = () => {
   });
 
   const drawLegend = () => {
-    console.log("draw legend");
     const legendHolder = svg.append("g").attr("class", "legend-container");
 
     let dataL = 0;
@@ -262,7 +262,6 @@ export const interactiveChart = () => {
     if (data == undefined) {
       return;
     }
-    console.log(data);
 
     // dynamically defining y domain
     y.domain([
@@ -291,7 +290,6 @@ export const interactiveChart = () => {
       .style("opacity", "1")
       .call(yAxis);
 
-    console.log(svg.selectAll("g.y.axis"));
     // styling y and x axises
     svg.selectAll("g.y.axis text").style("font-size", 15);
     svg.selectAll("g.x.axis text").style("font-size", 18);
@@ -330,8 +328,6 @@ export const interactiveChart = () => {
       })
       .enter()
       .append("g");
-
-    console.log(rects);
 
     //removing previous bar chart group
     svg

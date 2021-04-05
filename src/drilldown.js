@@ -34,9 +34,6 @@ export const handleDrillDown = (d, round, drillDownData, time) => {
 
   const color = d3.scaleOrdinal(d3.schemeSet1);
 
-  console.log(d);
-  console.log(round);
-
   const filteredIndustryData = currentPeriodData.values.filter((ele) => {
     if (ele.key === d.key) {
       return ele;
@@ -53,9 +50,6 @@ export const handleDrillDown = (d, round, drillDownData, time) => {
     .slice()
     .sort((a, b) => d3.descending(a.amountRaised, b.amountRaised))
     .slice(0, 10);
-
-  // let rects = g.selectAll("rect").data(newData);
-  let data = sortedTopTenCompanies;
 
   d3.selectAll("#inter svg").remove();
 
@@ -74,12 +68,7 @@ export const handleDrillDown = (d, round, drillDownData, time) => {
   const width = +svg.attr("width") / 2.25 - margin.left - margin.right;
   const height = +svg.attr("height") / 1 - margin.top - margin.bottom;
 
-  console.log(svg, margin, width, height);
-
-  const gContainer = svg
-    .append("g")
-    .attr("transform", "translate(0, 30)")
-    .classed("weekly-container", true);
+  const gContainer = svg.append("g").attr("transform", "translate(0, 30)");
 
   //append horizontal bar chart
   const g = gContainer
@@ -99,7 +88,6 @@ export const handleDrillDown = (d, round, drillDownData, time) => {
     .attr("width", width)
     .attr("height", height);
 
-  // .on("click", d => up(svg, d));
   const xAxis = (g) => {
     g.attr("class", "x-axis")
       .attr("transform", `translate(0 ,${margin.top})`)
@@ -187,7 +175,6 @@ const bar = (group, data, selector, x) => {
     .data(data)
     .join("g")
     .attr("cursor", "pointer")
-    //  .on("click", d => update(barChartData[time]))
     .on("mouseover", tip.show)
     .on("mouseout", tip.hide);
 
@@ -211,21 +198,11 @@ const bar = (group, data, selector, x) => {
   return g;
 };
 
-// function stack(i) {
-//   let value = 0;
-//   return (d) => {
-//     const t = `translate(${x3(value)},${barStep * i})`;
-//     value += d.amountRaised;
-//     return t;
-//   };
-// }
-
 const stagger = (x) => {
   let value = 0;
   return (d, i) => {
     const t = `translate(${x(value)},${barStep * i + 50})`;
     value += d.amountRaised;
-    console.log(t);
     return t;
   };
 };
@@ -257,20 +234,15 @@ const prepareLineChartData = (d, round, drillDownData) => {
       }
     });
 
-    console.log(filteredRoundData, i);
     let sum = 0;
 
     filteredRoundData.forEach((ele) => {
       sum += ele.amountRaised;
-      console.log(sum, i);
     });
-    console.log(sum, i);
     obj["y"] = sum;
-    console.log(obj, i);
     results.push(obj);
     i++;
   }
-  console.log(results);
   return results;
 };
 
@@ -280,7 +252,6 @@ const buildLineChart = (lineChartData, placeholder, round, time) => {
   const width = +svg.attr("width") / 1.75 - margin.left - margin.right;
   const height = +svg.attr("height") - margin.top - margin.bottom;
 
-  console.log(lineChartData);
   const sortedData = lineChartData
     .slice()
     .sort((a, b) => d3.descending(a.y, b.y));
@@ -315,14 +286,6 @@ const buildLineChart = (lineChartData, placeholder, round, time) => {
   const lineChart = gContainer
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  // .attr("width", width + margin.left + margin.right)
-  // .attr("height", height + margin.top + margin.bottom)
-  // .attr("cursor", "pointer")
-
-  // .append("g")
-
-  // .attr("transform", "translate(" + 50 + ", " + margin.top + ")");
 
   lineChart
     .append("g")
