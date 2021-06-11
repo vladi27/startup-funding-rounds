@@ -8,7 +8,7 @@ const sectors = ["medical", "web", "mobile", "ecommerce", "software"];
 const rounds = ["angel", "series-a", "series-b", "series-c+", "venture"];
 
 const appendParagraph = (height) => {
-  const hero = "Venture Rounds";
+  const hero = "Venture Money";
   const curWidth = document.getElementById("inter").clientWidth;
 
   const sentence1 =
